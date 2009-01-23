@@ -1,0 +1,4 @@
+= Protopuffs!
+
+A new implementation of Protocol Buffers in Ruby, based on the original
++ruby_protobuf+ library.
