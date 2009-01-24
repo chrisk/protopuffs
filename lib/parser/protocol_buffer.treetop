@@ -9,11 +9,9 @@ grammar ProtocolBuffer
   end
 
   rule proto_entries
-    # Is there a better way to do this pattern?
-    # nonterminal (terminal nonterminal)*
-    first_entry:proto_entry rest_entries:(s? entry:proto_entry)* {
+    proto_entry rest:(s? proto_entry)* {
       def entries
-        [first_entry] + rest_entries.elements.map { |s_and_entry| s_and_entry.entry }
+        rest.elements.inject([proto_entry]) { |a, s_and_pe| a << s_and_pe.proto_entry }
       end
     }
   end
