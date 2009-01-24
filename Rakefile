@@ -10,8 +10,9 @@ begin
     s.summary = %Q{Sex, drugs, and protocol buffers}
     s.email = "chris@kampers.net"
     s.homepage = "http://github.com/chrisk/protopuffs"
-    s.description = "A new implementation of Protocol Buffers in Ruby, based on the original ruby_protobuf library."
+    s.description = "A new implementation of Protocol Buffers in Ruby"
     s.authors = ["Chris Kampmeier"]
+    s.add_dependency "treetop"
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"

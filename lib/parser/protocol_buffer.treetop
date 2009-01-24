@@ -1,0 +1,57 @@
+grammar ProtocolBuffer
+
+  rule proto
+    s? proto_entries s? {
+      def messages
+        proto_entries.entries.select { |p| p.respond_to?(:message?) }
+      end
+    }
+  end
+
+  rule proto_entries
+    # Is there a better way to do this pattern?
+    # nonterminal (terminal nonterminal)*
+    first_entry:proto_entry rest_entries:(s? entry:proto_entry)* {
+      def entries
+        [first_entry] + rest_entries.elements.map { |s_and_entry| s_and_entry.entry }
+      end
+    }
+  end
+
+  rule proto_entry
+    message {
+      def message?
+        true
+      end
+    }
+  end
+
+  rule message
+    "message" s identifier s body:message_body {
+      def name
+        identifier.text_value
+      end
+    }
+  end
+
+  rule message_body
+    "{" s? fields:field* s? "}" {
+      def empty?
+        fields.empty?
+      end
+    }
+  end
+
+  rule field
+    "placeholder"
+  end
+
+  rule identifier
+    [A-Za-z_] [\w_]*
+  end
+
+  rule s
+    [ \t\n\r]+
+  end
+
+end
