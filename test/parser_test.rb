@@ -43,4 +43,29 @@ class ParserTest < Test::Unit::TestCase
     end
   end
 
+
+  context "a proto with a Person message including a name field" do
+    setup do
+      Treetop.load "lib/parser/protocol_buffer"
+      parser = ProtocolBufferParser.new
+      @proto = parser.parse(<<-proto)
+        message Person {
+          required string name = 1;
+        }
+      proto
+    end
+
+    should "have one message" do
+      assert_equal 1, @proto.messages.size
+    end
+
+    should "have a message named Person" do
+      assert_equal "Person", @proto.messages.first.name
+    end
+
+    should "have one field" do
+      assert_equal 1, @proto.messages.first.body.fields.elements.size
+    end
+  end
+
 end

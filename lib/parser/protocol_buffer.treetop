@@ -41,7 +41,21 @@ grammar ProtocolBuffer
   end
 
   rule field
-    "placeholder"
+    modifier s type s identifier s "=" s integer ";"
+  end
+
+  rule modifier
+    "required" / "optional" / "repeated"
+  end
+
+  rule type
+    "double" / "float" / "int32" / "int64" / "uint32" / "uint64" /
+    "sint32" / "sint64" / "fixed32" / "fixed64" / "sfixed32" /
+    "sfixed64" / "bool" / "string" / "bytes"
+  end
+
+  rule integer
+    [\d]+
   end
 
   rule identifier
