@@ -41,7 +41,15 @@ grammar ProtocolBuffer
   end
 
   rule field
-    modifier s type s identifier s "=" s integer ";"
+    modifier s type s identifier s "=" s integer s? option:field_option? ";" {
+      def default
+        option.empty? ? nil : option.literal.obj
+      end
+    }
+  end
+
+  rule field_option
+    "[" s? "default" s? "=" s? literal s? "]"
   end
 
   rule modifier
@@ -54,8 +62,28 @@ grammar ProtocolBuffer
     "sfixed64" / "bool" / "string" / "bytes"
   end
 
+  rule literal
+    integer / string
+  end
+
   rule integer
-    [\d]+
+    [\d]+ {
+      def obj
+        text_value.to_i
+      end
+    }
+  end
+
+  rule string
+    quote chars:[\w]* quote {
+      def obj
+        chars.text_value
+      end
+    }
+  end
+
+  rule quote
+    ["']
   end
 
   rule identifier

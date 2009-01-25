@@ -103,4 +103,35 @@ class ParserTest < Test::Unit::TestCase
     end
   end
 
+
+  context "a proto with a Person message including two fields with defaults and one without" do
+    setup do
+      Treetop.load "lib/parser/protocol_buffer"
+      parser = ProtocolBufferParser.new
+      @proto = parser.parse(<<-proto)
+        message Person {
+          required string name = 1;
+          optional string language = 2 [default = "en"];
+          optional int32 account_code = 3 [default = 0];
+        }
+      proto
+    end
+
+    should "have one message named person" do
+      assert_equal 1, @proto.messages.size
+      assert_equal "Person", @proto.messages.first.name
+    end
+
+    should "have three fields with correct components" do
+      fields = @proto.messages.first.body.fields
+      assert_equal 3, fields.size
+      actual = fields.map { |f| [f.modifier, f.type, f.identifier, f.integer, f.default] }
+      actual.map! { |f| f.map! { |el| el.respond_to?(:text_value) ? el.text_value : el } }
+      expected = [ ["required", "string", "name", "1", nil],
+                   ["optional", "string", "language", "2", "en"],
+                   ["optional", "int32", "account_code", "3", 0] ]
+      assert_equal expected, actual
+    end
+  end
+
 end
