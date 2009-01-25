@@ -63,8 +63,13 @@ class ParserTest < Test::Unit::TestCase
       assert_equal "Person", @proto.messages.first.name
     end
 
-    should "have one field" do
-      assert_equal 1, @proto.messages.first.body.fields.elements.size
+    should "have one required string field called name with tag 1" do
+      fields = @proto.messages.first.body.fields.elements
+      assert_equal 1, fields.size
+      assert_equal "required", fields.first.modifier.text_value
+      assert_equal "string", fields.first.type.text_value
+      assert_equal "name", fields.first.identifier.text_value
+      assert_equal "1", fields.first.integer.text_value
     end
   end
 
