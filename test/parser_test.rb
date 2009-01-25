@@ -27,7 +27,10 @@ class ParserTest < Test::Unit::TestCase
     setup do
       Treetop.load "lib/parser/protocol_buffer"
       parser = ProtocolBufferParser.new
-      @proto = parser.parse("message Apple { }\n\nmessage Orange { }")
+      @proto = parser.parse(<<-proto)
+        message Apple {}
+        message Orange {}
+      proto
     end
 
     should "have two messages" do
