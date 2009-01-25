@@ -25,7 +25,7 @@ grammar ProtocolBuffer
   end
 
   rule message
-    "message" s identifier s body:message_body {
+    "message" s identifier s "{" s? body:message_body? s? "}" {
       def name
         identifier.text_value
       end
@@ -33,9 +33,9 @@ grammar ProtocolBuffer
   end
 
   rule message_body
-    "{" s? fields:field* s? "}" {
-      def empty?
-        fields.empty?
+    field rest:(s? field)* {
+      def fields
+        rest.elements.inject([field]) { |a, s_and_field| a << s_and_field.field }
       end
     }
   end

@@ -64,12 +64,42 @@ class ParserTest < Test::Unit::TestCase
     end
 
     should "have one required string field called name with tag 1" do
-      fields = @proto.messages.first.body.fields.elements
+      fields = @proto.messages.first.body.fields
       assert_equal 1, fields.size
       assert_equal "required", fields.first.modifier.text_value
       assert_equal "string", fields.first.type.text_value
       assert_equal "name", fields.first.identifier.text_value
       assert_equal "1", fields.first.integer.text_value
+    end
+  end
+
+
+  context "a proto with a Person message including three fields" do
+    setup do
+      Treetop.load "lib/parser/protocol_buffer"
+      parser = ProtocolBufferParser.new
+      @proto = parser.parse(<<-proto)
+        message Person {
+          required string name = 1;
+          required int32 id = 2;
+          optional string email = 3;
+        }
+      proto
+    end
+
+    should "have one message named person" do
+      assert_equal 1, @proto.messages.size
+      assert_equal "Person", @proto.messages.first.name
+    end
+
+    should "have three fields with correct components" do
+      fields = @proto.messages.first.body.fields
+      assert_equal 3, fields.size
+      actual = fields.map { |f| [f.modifier, f.type, f.identifier, f.integer].map { |el| el.text_value } }
+      expected = [ %w(required string name 1),
+                   %w(required int32 id 2),
+                   %w(optional string email 3) ]
+      assert_equal expected, actual
     end
   end
 
