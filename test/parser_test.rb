@@ -58,11 +58,8 @@ class ParserTest < Test::Unit::TestCase
       proto
     end
 
-    should "have one message" do
+    should "have one message named person" do
       assert_equal 1, @proto.messages.size
-    end
-
-    should "have a message named Person" do
       assert_equal "Person", @proto.messages.first.name
     end
 
