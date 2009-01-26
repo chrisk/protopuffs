@@ -143,12 +143,11 @@ class ParserTest < Test::Unit::TestCase
         proto
       end
 
-      should "have one message" do
-        assert_equal 1, @proto.messages.size
-        assert_equal "Person", @proto.messages.first.name
+      should "parse" do
+        assert_not_nil @proto
       end
 
-      should "have remaining fields with correct components" do
+      should "have uncommented fields with correct components" do
         fields = @proto.messages.first.body.fields
         assert_equal 2, fields.size
         actual = fields.map { |f| [f.modifier, f.type, f.identifier, f.integer, f.default] }
