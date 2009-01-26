@@ -157,6 +157,33 @@ class ParserTest < Test::Unit::TestCase
         assert_equal expected, actual
       end
     end
+
+
+    context "with a message including a user-typed field" do
+      setup do
+        @proto = @parser.parse(<<-proto)
+          message Person {
+            required string name = 1;
+            repeated Address addresses = 2;
+          }
+        proto
+      end
+
+      should "parse" do
+        assert_not_nil @proto
+      end
+
+      should "have two fields with correct components" do
+        fields = @proto.messages.first.body.fields
+        assert_equal 2, fields.size
+        actual = fields.map { |f| [f.modifier, f.type, f.identifier, f.integer] }
+        actual.map! { |f| f.map! { |el| el.respond_to?(:text_value) ? el.text_value : el } }
+        expected = [ ["required", "string", "name", "1"],
+                     ["repeated", "Address", "addresses", "2"] ]
+        assert_equal expected, actual
+      end
+    end
+
   end
 
 end
