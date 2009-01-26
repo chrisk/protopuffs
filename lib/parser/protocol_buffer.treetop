@@ -91,7 +91,15 @@ grammar ProtocolBuffer
   end
 
   rule s
-    [ \t\n\r]+
+    (whitespace / comment_to_eol)+
+  end
+
+  rule comment_to_eol
+    '//' (!"\n" .)*
+  end
+
+  rule whitespace
+    [ \t\n\r]
   end
 
 end
