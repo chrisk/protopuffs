@@ -6,6 +6,11 @@ module Protopuffs
         def messages
           proto_entries.entries.select { |p| p.respond_to?(:message?) }
         end
+
+        def build
+          # placeholder until there's a Proto class
+          messages.each { |message| message.build }
+        end
       }
     end
 
@@ -30,6 +35,11 @@ module Protopuffs
         def name
           identifier.text_value
         end
+        
+        def build
+          # placeholder until there's a Message class
+          body.build unless body.empty?
+        end
       }
     end
 
@@ -38,6 +48,11 @@ module Protopuffs
         def fields
           rest.elements.inject([field]) { |a, s_and_field| a << s_and_field.field }
         end
+
+        def build
+          # placeholder until there's a MessageBody class
+          fields.each { |field| field.build }
+        end
       }
     end
 
@@ -45,6 +60,11 @@ module Protopuffs
       modifier s type s identifier s "=" s integer s? option:field_option? ";" {
         def default
           option.empty? ? nil : option.literal.obj
+        end
+
+        def build
+          MessageField.new(modifier.text_value, type.text_value, identifier.text_value,
+                           integer.text_value.to_i, default)
         end
       }
     end

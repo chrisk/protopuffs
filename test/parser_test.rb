@@ -4,8 +4,7 @@ class ParserTest < Test::Unit::TestCase
 
   context "a protocol buffer descriptor" do
     setup do
-      Treetop.load "lib/parser/protocol_buffer"
-      @parser = Protopuffs::ProtocolBufferParser.new
+      @parser = Protopuffs::Parser::ProtocolBufferDescriptor.new
     end
 
     context "with an empty Person message" do
@@ -28,28 +27,36 @@ class ParserTest < Test::Unit::TestCase
 
     context "with two empty messages Apple and Orange" do
       setup do
-        @proto = @parser.parse(<<-proto)
+        @descriptor = <<-proto
           message Apple {}
           message Orange {}
         proto
       end
 
       should "have two messages" do
-        assert_equal 2, @proto.messages.size
+        proto = @parser.parse(@descriptor)
+        assert_equal 2, proto.messages.size
       end
 
       should "have messages named Apple and Orange" do
-        assert_equal %w(Apple Orange), @proto.messages.map { |m| m.name }.sort
+        proto = @parser.parse(@descriptor)
+        assert_equal %w(Apple Orange), proto.messages.map { |m| m.name }.sort
       end
 
       should "have messages with empty bodes" do
-        assert @proto.messages.all? { |m| m.body.empty? }
+        proto = @parser.parse(@descriptor)
+        assert proto.messages.all? { |m| m.body.empty? }
+      end
+
+      should "not create any MessageFields" do
+        Protopuffs::MessageField.expects(:new).never
+        @parser.parse(@descriptor)
       end
     end
 
     context "a proto with a Person message including a name field" do
       setup do
-        @proto = @parser.parse(<<-proto)
+        @descriptor = <<-proto
           message Person {
             required string name = 1;
           }
@@ -57,23 +64,30 @@ class ParserTest < Test::Unit::TestCase
       end
 
       should "have one message named person" do
-        assert_equal 1, @proto.messages.size
-        assert_equal "Person", @proto.messages.first.name
+        proto = @parser.parse(@descriptor)
+        assert_equal 1, proto.messages.size
+        assert_equal "Person", proto.messages.first.name
       end
 
       should "have one required string field called name with tag 1" do
-        fields = @proto.messages.first.body.fields
+        proto = @parser.parse(@descriptor)
+        fields = proto.messages.first.body.fields
         assert_equal 1, fields.size
         assert_equal "required", fields.first.modifier.text_value
         assert_equal "string", fields.first.type.text_value
         assert_equal "name", fields.first.identifier.text_value
         assert_equal "1", fields.first.integer.text_value
       end
+
+      should "create one MessageField" do
+        Protopuffs::MessageField.expects(:new).once.returns(mock('MessageField instance'))
+        @parser.parse(@descriptor)
+      end
     end
 
     context "with a Person message including three fields" do
       setup do
-        @proto = @parser.parse(<<-proto)
+        @descriptor = <<-proto
           message Person {
             required string name = 1;
             required int32 id = 2;
@@ -83,18 +97,25 @@ class ParserTest < Test::Unit::TestCase
       end
 
       should "have one message named person" do
-        assert_equal 1, @proto.messages.size
-        assert_equal "Person", @proto.messages.first.name
+        proto = @parser.parse(@descriptor)
+        assert_equal 1, proto.messages.size
+        assert_equal "Person", proto.messages.first.name
       end
 
       should "have three fields with correct components" do
-        fields = @proto.messages.first.body.fields
+        proto = @parser.parse(@descriptor)
+        fields = proto.messages.first.body.fields
         assert_equal 3, fields.size
         actual = fields.map { |f| [f.modifier, f.type, f.identifier, f.integer].map { |el| el.text_value } }
         expected = [ %w(required string name 1),
                      %w(required int32 id 2),
                      %w(optional string email 3) ]
         assert_equal expected, actual
+      end
+
+      should "create three MessageFields" do
+        Protopuffs::MessageField.expects(:new).times(3).returns(mock('MessageField instance'))
+        @parser.parse(@descriptor)
       end
     end
 
