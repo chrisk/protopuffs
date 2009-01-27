@@ -5,7 +5,7 @@ class ParserTest < Test::Unit::TestCase
   context "a protocol buffer descriptor" do
     setup do
       Treetop.load "lib/parser/protocol_buffer"
-      @parser = ProtocolBufferParser.new
+      @parser = Protopuffs::ProtocolBufferParser.new
     end
 
     context "with an empty Person message" do

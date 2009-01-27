@@ -1,105 +1,107 @@
-grammar ProtocolBuffer
+module Protopuffs
+  grammar ProtocolBuffer
 
-  rule proto
-    s? proto_entries s? {
-      def messages
-        proto_entries.entries.select { |p| p.respond_to?(:message?) }
-      end
-    }
+    rule proto
+      s? proto_entries s? {
+        def messages
+          proto_entries.entries.select { |p| p.respond_to?(:message?) }
+        end
+      }
+    end
+
+    rule proto_entries
+      proto_entry rest:(s? proto_entry)* {
+        def entries
+          rest.elements.inject([proto_entry]) { |a, s_and_pe| a << s_and_pe.proto_entry }
+        end
+      }
+    end
+
+    rule proto_entry
+      message {
+        def message?
+          true
+        end
+      }
+    end
+
+    rule message
+      "message" s identifier s "{" s? body:message_body? s? "}" {
+        def name
+          identifier.text_value
+        end
+      }
+    end
+
+    rule message_body
+      field rest:(s? field)* {
+        def fields
+          rest.elements.inject([field]) { |a, s_and_field| a << s_and_field.field }
+        end
+      }
+    end
+
+    rule field
+      modifier s type s identifier s "=" s integer s? option:field_option? ";" {
+        def default
+          option.empty? ? nil : option.literal.obj
+        end
+      }
+    end
+
+    rule field_option
+      "[" s? "default" s? "=" s? literal s? "]"
+    end
+
+    rule modifier
+      "required" / "optional" / "repeated"
+    end
+
+    rule type
+      "double" / "float" / "int32" / "int64" / "uint32" / "uint64" /
+      "sint32" / "sint64" / "fixed32" / "fixed64" / "sfixed32" /
+      "sfixed64" / "bool" / "string" / "bytes" / identifier
+    end
+
+    rule literal
+      integer / string
+    end
+
+    rule integer
+      [\d]+ {
+        def obj
+          text_value.to_i
+        end
+      }
+    end
+
+    rule string
+      quote chars:[\w]* quote {
+        def obj
+          chars.text_value
+        end
+      }
+    end
+
+    rule quote
+      ["']
+    end
+
+    rule identifier
+      [A-Za-z_] [\w_]*
+    end
+
+    rule s
+      (whitespace / comment_to_eol)+
+    end
+
+    rule comment_to_eol
+      '//' (!"\n" .)*
+    end
+
+    rule whitespace
+      [ \t\n\r]
+    end
+
   end
-
-  rule proto_entries
-    proto_entry rest:(s? proto_entry)* {
-      def entries
-        rest.elements.inject([proto_entry]) { |a, s_and_pe| a << s_and_pe.proto_entry }
-      end
-    }
-  end
-
-  rule proto_entry
-    message {
-      def message?
-        true
-      end
-    }
-  end
-
-  rule message
-    "message" s identifier s "{" s? body:message_body? s? "}" {
-      def name
-        identifier.text_value
-      end
-    }
-  end
-
-  rule message_body
-    field rest:(s? field)* {
-      def fields
-        rest.elements.inject([field]) { |a, s_and_field| a << s_and_field.field }
-      end
-    }
-  end
-
-  rule field
-    modifier s type s identifier s "=" s integer s? option:field_option? ";" {
-      def default
-        option.empty? ? nil : option.literal.obj
-      end
-    }
-  end
-
-  rule field_option
-    "[" s? "default" s? "=" s? literal s? "]"
-  end
-
-  rule modifier
-    "required" / "optional" / "repeated"
-  end
-
-  rule type
-    "double" / "float" / "int32" / "int64" / "uint32" / "uint64" /
-    "sint32" / "sint64" / "fixed32" / "fixed64" / "sfixed32" /
-    "sfixed64" / "bool" / "string" / "bytes" / identifier
-  end
-
-  rule literal
-    integer / string
-  end
-
-  rule integer
-    [\d]+ {
-      def obj
-        text_value.to_i
-      end
-    }
-  end
-
-  rule string
-    quote chars:[\w]* quote {
-      def obj
-        chars.text_value
-      end
-    }
-  end
-
-  rule quote
-    ["']
-  end
-
-  rule identifier
-    [A-Za-z_] [\w_]*
-  end
-
-  rule s
-    (whitespace / comment_to_eol)+
-  end
-
-  rule comment_to_eol
-    '//' (!"\n" .)*
-  end
-
-  rule whitespace
-    [ \t\n\r]
-  end
-
 end
