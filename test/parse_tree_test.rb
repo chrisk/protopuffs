@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/test_helper'
 
-class ParserTest < Test::Unit::TestCase
+class ParseTreeTest < Test::Unit::TestCase
 
   context "a protocol buffer descriptor" do
     setup do
@@ -47,11 +47,6 @@ class ParserTest < Test::Unit::TestCase
         proto = @parser.parse(@descriptor)
         assert proto.messages.all? { |m| m.body.empty? }
       end
-
-      should "not create any MessageFields" do
-        Protopuffs::MessageField.expects(:new).never
-        @parser.parse(@descriptor)
-      end
     end
 
     context "a proto with a Person message including a name field" do
@@ -77,11 +72,6 @@ class ParserTest < Test::Unit::TestCase
         assert_equal "string", fields.first.type.text_value
         assert_equal "name", fields.first.identifier.text_value
         assert_equal "1", fields.first.integer.text_value
-      end
-
-      should "create one MessageField" do
-        Protopuffs::MessageField.expects(:new).once.returns(mock('MessageField instance'))
-        @parser.parse(@descriptor)
       end
     end
 
@@ -111,11 +101,6 @@ class ParserTest < Test::Unit::TestCase
                      %w(required int32 id 2),
                      %w(optional string email 3) ]
         assert_equal expected, actual
-      end
-
-      should "create three MessageFields" do
-        Protopuffs::MessageField.expects(:new).times(3).returns(mock('MessageField instance'))
-        @parser.parse(@descriptor)
       end
     end
 
