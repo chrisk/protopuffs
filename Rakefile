@@ -13,6 +13,7 @@ begin
     s.description = "A new implementation of Protocol Buffers in Ruby"
     s.authors = ["Chris Kampmeier"]
     s.add_dependency "treetop"
+    s.add_development_dependency "mocha"
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
