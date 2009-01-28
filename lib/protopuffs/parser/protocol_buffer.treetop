@@ -49,7 +49,6 @@ module Protopuffs
         end
 
         def build
-          # placeholder until there's a MessageBody class
           fields.map { |field| field.build }
         end
       }
