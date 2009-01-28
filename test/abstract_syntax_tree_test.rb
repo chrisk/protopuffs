@@ -9,11 +9,15 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
 
     context "with an empty Person message" do
       setup do
-        @proto = @parser.parse("message Person {}")
+        @descriptor = "message Person {}"
       end
 
-      # TODO: AST tests here
+      should "create one Message" do
+        Protopuffs::Message.expects(:new).once.with("Person", [])
+        @parser.parse(@descriptor)
+      end
     end
+
 
     context "with two empty messages Apple and Orange" do
       setup do
@@ -23,11 +27,18 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
         proto
       end
 
+      should "create two Messages" do
+        Protopuffs::Message.expects(:new).once.with("Apple", []).in_sequence
+        Protopuffs::Message.expects(:new).once.with("Orange", []).in_sequence
+        @parser.parse(@descriptor)
+      end
+
       should "not create any MessageFields" do
         Protopuffs::MessageField.expects(:new).never
         @parser.parse(@descriptor)
       end
     end
+
 
     context "a proto with a Person message including a name field" do
       setup do
@@ -38,11 +49,17 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
         proto
       end
 
+      should "create one 'Person' Message with one field" do
+        Protopuffs::Message.expects(:new).once.with("Person", responds_with(:size, 1))
+        @parser.parse(@descriptor)
+      end
+
       should "create one MessageField" do
         Protopuffs::MessageField.expects(:new).once.returns(mock('MessageField instance'))
         @parser.parse(@descriptor)
       end
     end
+
 
     context "with a Person message including three fields" do
       setup do
@@ -55,15 +72,21 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
         proto
       end
 
+      should "create one 'Person' Message with three fields" do
+        Protopuffs::Message.expects(:new).once.with("Person", responds_with(:size, 3))
+        @parser.parse(@descriptor)
+      end
+
       should "create three MessageFields" do
         Protopuffs::MessageField.expects(:new).times(3).returns(mock('MessageField instance'))
         @parser.parse(@descriptor)
       end
     end
 
-    context "with a Person message including two fields with defaults and one without" do
+
+    context "with a message including two fields with defaults and one without" do
       setup do
-        @proto = @parser.parse(<<-proto)
+        @descriptor = <<-proto
           message Person {
             required string name = 1;
             optional string language = 2 [default = "en"];
@@ -72,13 +95,21 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
         proto
       end
 
-      # TODO: AST tests here
+      should "create one 'Person' Message with three fields" do
+        Protopuffs::Message.expects(:new).once.with("Person", responds_with(:size, 3))
+        @parser.parse(@descriptor)
+      end
+
+      should "create three MessageFields" do
+        Protopuffs::MessageField.expects(:new).times(3).returns(mock('MessageField instance'))
+        @parser.parse(@descriptor)
+      end
     end
 
 
     context "with a message including a user-typed field" do
       setup do
-        @proto = @parser.parse(<<-proto)
+        @descriptor = <<-proto
           message Person {
             required string name = 1;
             repeated Address addresses = 2;
@@ -86,9 +117,16 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
         proto
       end
 
-      # TODO: AST tests here
-    end
+      should "create one 'Person' Message with two fields" do
+        Protopuffs::Message.expects(:new).once.with("Person", responds_with(:size, 2))
+        @parser.parse(@descriptor)
+      end
 
+      should "create three MessageFields" do
+        Protopuffs::MessageField.expects(:new).times(2).returns(mock('MessageField instance'))
+        @parser.parse(@descriptor)
+      end
+    end
   end
 
 end

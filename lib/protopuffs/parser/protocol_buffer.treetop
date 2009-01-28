@@ -37,8 +37,7 @@ module Protopuffs
         end
         
         def build
-          # placeholder until there's a Message class
-          body.build unless body.empty?
+          Message.new(name, body.empty? ? [] : body.build)
         end
       }
     end
@@ -51,7 +50,7 @@ module Protopuffs
 
         def build
           # placeholder until there's a MessageBody class
-          fields.each { |field| field.build }
+          fields.map { |field| field.build }
         end
       }
     end

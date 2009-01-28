@@ -1,3 +1,4 @@
+require "protopuffs/message"
 require "protopuffs/message_field"
 require "protopuffs/parser"
 
