@@ -9,4 +9,8 @@ class ProtopuffsTest < Test::Unit::TestCase
     end
   end
 
+  should "have a ParseError class" do
+    Protopuffs::ParseError
+  end
+
 end
