@@ -13,8 +13,13 @@ module Protopuffs
     private
 
     def check_fields_for_errors
-      if @fields.map { |f| f.tag }.uniq.size != @fields.size
+      tags = @fields.map { |field| field.tag }
+      if tags.uniq.size != @fields.size
         raise ParseError, "A tag was reused in the descriptor for message #{@name}. Please check that each tag is unique."
+      end
+
+      if tags.any? { |tag| tag < 1 || tag > 536_870_911 }
+        raise ParseError, "A tag is out of range in the descriptor for message #{@name}. Please check that each tag is in the range 1 <= x <= 536,870,911."
       end
     end
   end
