@@ -13,7 +13,7 @@ class MessageTest < Test::Unit::TestCase
   end
 
 
-  context "creating a Message with fields that have out-of-range tags" do
+  context "creating a Message with fields that have invalid tags" do
     should "raise a Protopuffs::ParseError when a tag is too large" do
       fields = [Protopuffs::MessageField.new("optional", "int32", "name", 1),
                 Protopuffs::MessageField.new("optional", "string", "address", 536_870_912)]
@@ -25,6 +25,13 @@ class MessageTest < Test::Unit::TestCase
     should "raise a Protopuffs::ParseError when a tag is too small" do
       fields = [Protopuffs::MessageField.new("optional", "int32", "name", 0),
                 Protopuffs::MessageField.new("optional", "string", "address", 1)]
+      assert_raises Protopuffs::ParseError do
+        Protopuffs::Message.new("Person", fields)
+      end
+    end
+
+    should "raise a Protopuffs::ParseError when a tag is reserved" do
+      fields = [Protopuffs::MessageField.new("optional", "string", "name", 19050)]
       assert_raises Protopuffs::ParseError do
         Protopuffs::Message.new("Person", fields)
       end
