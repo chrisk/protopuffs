@@ -2,39 +2,12 @@ require File.dirname(__FILE__) + '/test_helper'
 
 class MessageTest < Test::Unit::TestCase
 
-  context "creating a Message with fields that have duplicate tags" do
-    should "raise a Protopuffs::ParseError" do
-      fields = [Protopuffs::MessageField.new("optional", "int32", "name", 1),
-                Protopuffs::MessageField.new("optional", "string", "address", 1)]
-      assert_raises Protopuffs::ParseError do
-        Protopuffs::Message.new("Person", fields)
-      end
-    end
-  end
-
-
-  context "creating a Message with fields that have invalid tags" do
-    should "raise a Protopuffs::ParseError when a tag is too large" do
-      fields = [Protopuffs::MessageField.new("optional", "int32", "name", 1),
-                Protopuffs::MessageField.new("optional", "string", "address", 536_870_912)]
-      assert_raises Protopuffs::ParseError do
-        Protopuffs::Message.new("Person", fields)
-      end
-    end
-
-    should "raise a Protopuffs::ParseError when a tag is too small" do
-      fields = [Protopuffs::MessageField.new("optional", "int32", "name", 0),
-                Protopuffs::MessageField.new("optional", "string", "address", 1)]
-      assert_raises Protopuffs::ParseError do
-        Protopuffs::Message.new("Person", fields)
-      end
-    end
-
-    should "raise a Protopuffs::ParseError when a tag is reserved" do
-      fields = [Protopuffs::MessageField.new("optional", "string", "name", 19050)]
-      assert_raises Protopuffs::ParseError do
-        Protopuffs::Message.new("Person", fields)
-      end
+  context "when a MessageDescriptor for 'Person' is created" do
+    should "create a Message::Person class" do
+      fields = [Protopuffs::MessageField.new("optional", "string", "name", 1),
+                Protopuffs::MessageField.new("optional", "string", "address", 2)]
+      Protopuffs::MessageDescriptor.new("Person", fields)
+      assert_equal Protopuffs::Message::Person.new.to_wire_format, "12"
     end
   end
 

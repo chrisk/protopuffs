@@ -1,16 +1,30 @@
 module Protopuffs
 
-  class Message
+  # Namespace the dynamically-generated classes below
+  module Message; end
+
+  class MessageDescriptor
     attr_reader :name, :fields
 
     def initialize(name, fields)
       @name = name
       @fields = fields
       check_fields_for_errors
+      create_class_dynamically
     end
 
 
     private
+
+    def create_class_dynamically
+      Protopuffs::Message.module_eval <<-END
+        class #{name.capitalize}
+          def to_wire_format
+            "#{@fields.map { |f| f.tag }.join}"
+          end
+        end
+      END
+    end
 
     def check_fields_for_errors
       tags = @fields.map { |field| field.tag }

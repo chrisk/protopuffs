@@ -12,8 +12,8 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
         @descriptor = "message Person {}"
       end
 
-      should "create one Message" do
-        Protopuffs::Message.expects(:new).once.with("Person", [])
+      should "create one MessageDescriptor" do
+        Protopuffs::MessageDescriptor.expects(:new).once.with("Person", [])
         @parser.parse(@descriptor)
       end
 
@@ -32,9 +32,9 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
         proto
       end
 
-      should "create two Messages" do
-        Protopuffs::Message.expects(:new).once.with("Apple", []).in_sequence
-        Protopuffs::Message.expects(:new).once.with("Orange", []).in_sequence
+      should "create two MessageDescriptors" do
+        Protopuffs::MessageDescriptor.expects(:new).once.with("Apple", []).in_sequence
+        Protopuffs::MessageDescriptor.expects(:new).once.with("Orange", []).in_sequence
         @parser.parse(@descriptor)
       end
 
@@ -54,8 +54,8 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
         proto
       end
 
-      should "create one 'Person' Message with one field" do
-        Protopuffs::Message.expects(:new).once.with("Person", responds_with(:size, 1))
+      should "create one 'Person' MessageDescriptor with one field" do
+        Protopuffs::MessageDescriptor.expects(:new).once.with("Person", responds_with(:size, 1))
         @parser.parse(@descriptor)
       end
 
@@ -77,8 +77,8 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
         proto
       end
 
-      should "create one 'Person' Message with three fields" do
-        Protopuffs::Message.expects(:new).once.with("Person", responds_with(:size, 3))
+      should "create one 'Person' MessageDescriptor with three fields" do
+        Protopuffs::MessageDescriptor.expects(:new).once.with("Person", responds_with(:size, 3))
         @parser.parse(@descriptor)
       end
 
@@ -102,8 +102,8 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
         proto
       end
 
-      should "create one 'Person' Message with three fields" do
-        Protopuffs::Message.expects(:new).once.with("Person", responds_with(:size, 3))
+      should "create one 'Person' MessageDescriptor with three fields" do
+        Protopuffs::MessageDescriptor.expects(:new).once.with("Person", responds_with(:size, 3))
         @parser.parse(@descriptor)
       end
 
@@ -126,8 +126,8 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
         proto
       end
 
-      should "create one 'Person' Message with two fields" do
-        Protopuffs::Message.expects(:new).once.with("Person", responds_with(:size, 2))
+      should "create one 'Person' MessageDescriptor with two fields" do
+        Protopuffs::MessageDescriptor.expects(:new).once.with("Person", responds_with(:size, 2))
         @parser.parse(@descriptor)
       end
 
