@@ -19,11 +19,18 @@ module Protopuffs
     def create_class_dynamically
       Protopuffs::Message.module_eval <<-END
         class #{name.capitalize}
+          #{attr_accessor_declaration}
           def to_wire_format
-            "#{@fields.map { |f| f.tag }.join}"
+            "#{fields.map { |f| f.tag }.join}"
           end
         end
       END
+    end
+
+    def attr_accessor_declaration
+      if fields.any?
+        "attr_accessor " + fields.map { |f| ":#{f.identifier.downcase}" }.join(", ")
+      end
     end
 
     def check_fields_for_errors

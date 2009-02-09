@@ -60,7 +60,7 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
       end
 
       should "create one MessageField with correct options" do
-        Protopuffs::MessageField.expects(:new).once.with("required", "string", "name", 1, nil).returns(stub(:tag => 1))
+        Protopuffs::MessageField.expects(:new).once.with("required", "string", "name", 1, nil).returns(stub(:tag => 1, :identifier => "name"))
         @parser.parse(@descriptor)
       end
     end
@@ -83,9 +83,9 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
       end
 
       should "create three MessageFields with correct options" do
-        Protopuffs::MessageField.expects(:new).once.with("required", "string", "name", 1, nil).in_sequence.returns(stub(:tag => 1))
-        Protopuffs::MessageField.expects(:new).once.with("required", "int32", "id", 2, nil).in_sequence.returns(stub(:tag => 2))
-        Protopuffs::MessageField.expects(:new).once.with("optional", "string", "email", 3, nil).in_sequence.returns(stub(:tag => 3))
+        Protopuffs::MessageField.expects(:new).once.with("required", "string", "name", 1, nil).in_sequence.returns(stub(:tag => 1, :identifier => "name"))
+        Protopuffs::MessageField.expects(:new).once.with("required", "int32", "id", 2, nil).in_sequence.returns(stub(:tag => 2, :identifier => "id"))
+        Protopuffs::MessageField.expects(:new).once.with("optional", "string", "email", 3, nil).in_sequence.returns(stub(:tag => 3, :identifier => "email"))
         @parser.parse(@descriptor)
       end
     end
@@ -108,9 +108,9 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
       end
 
       should "create three MessageFields with correct options" do
-        Protopuffs::MessageField.expects(:new).once.with("required", "string", "name", 1, nil).in_sequence.returns(stub(:tag => 1))
-        Protopuffs::MessageField.expects(:new).once.with("optional", "string", "language", 2, "en").in_sequence.returns(stub(:tag => 2))
-        Protopuffs::MessageField.expects(:new).once.with("optional", "int32", "account_code", 3, 0).in_sequence.returns(stub(:tag => 3))
+        Protopuffs::MessageField.expects(:new).once.with("required", "string", "name", 1, nil).in_sequence.returns(stub(:tag => 1, :identifier => "name"))
+        Protopuffs::MessageField.expects(:new).once.with("optional", "string", "language", 2, "en").in_sequence.returns(stub(:tag => 2, :identifier => "language"))
+        Protopuffs::MessageField.expects(:new).once.with("optional", "int32", "account_code", 3, 0).in_sequence.returns(stub(:tag => 3, :identifier => "account_code"))
         @parser.parse(@descriptor)
       end
     end
@@ -132,8 +132,8 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
       end
 
       should "create two MessageFields with correct options" do
-        Protopuffs::MessageField.expects(:new).once.with("required", "string", "name", 1, nil).in_sequence.returns(stub(:tag => 1))
-        Protopuffs::MessageField.expects(:new).once.with("repeated", "Address", "addresses", 2, nil).in_sequence.returns(stub(:tag => 2))
+        Protopuffs::MessageField.expects(:new).once.with("required", "string", "name", 1, nil).in_sequence.returns(stub(:tag => 1, :identifier => "name"))
+        Protopuffs::MessageField.expects(:new).once.with("repeated", "Address", "addresses", 2, nil).in_sequence.returns(stub(:tag => 2, :identifier => "addresses"))
         @parser.parse(@descriptor)
       end
     end
