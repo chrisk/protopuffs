@@ -14,6 +14,7 @@ begin
     s.authors = ["Chris Kampmeier"]
     s.add_dependency "treetop"
     s.add_development_dependency "mocha"
+    s.add_development_dependency "shoulda"
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
