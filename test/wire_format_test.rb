@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/test_helper'
 class WireFormatTest < Test::Unit::TestCase
 
   context "a message with one int32 field set to 150" do
-    # from http://code.google.com/apis/protocolbuffers/docs/encoding.html
+    # from http://code.google.com/apis/protocolbuffers/docs/encoding.html#simple
     setup do
       fields = [Protopuffs::MessageField.new("required", "int32", "a", 1)]
       Protopuffs::MessageDescriptor.new("Test1", fields)
@@ -68,4 +68,16 @@ class WireFormatTest < Test::Unit::TestCase
     should_serialize_to_wire_format 0x08, 0x00, 0x10, 0x01
   end
 
+
+  context "a message with one string field set to 'testing'" do
+    setup do
+      # from http://code.google.com/apis/protocolbuffers/docs/encoding.html#types
+      fields = [Protopuffs::MessageField.new("required", "string", "b", 2)]
+      Protopuffs::MessageDescriptor.new("Test2", fields)
+      @message = Protopuffs::Message::Test2.new
+      @message.b = "testing"
+    end
+
+    should_serialize_to_wire_format 0x12, 0x07, 0x74, 0x65, 0x73, 0x74, 0x69, 0x6E, 0x67
+  end
 end

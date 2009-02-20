@@ -16,10 +16,18 @@ module Protopuffs
         value = value ? 1 : 0
       end
 
-      output = StringIO.new
+      case wire_type
+      when WireType::VARINT
+        value_bytes = self.class.varint_encode(value)
+      when WireType::LENGTH_DELIMITED
+        value_bytes = self.class.varint_encode(value.size) + self.class.string_encode(value)
+      end
+
       tag_bytes = (@tag << 3) | wire_type
+
+      output = StringIO.new
       output.write self.class.varint_encode(tag_bytes)
-      output.write self.class.varint_encode(value)
+      output.write value_bytes
       output.string
     end
 
@@ -39,9 +47,14 @@ module Protopuffs
       bytes.pack('C*')
     end
 
+    def self.string_encode(value)
+      value.unpack('U*').pack('C*')
+    end
+
     def wire_type
       case @type
       when "int32", "int64", "uint32", "uint64", "bool" then WireType::VARINT
+      when "string"                                     then WireType::LENGTH_DELIMITED
       end
     end
   end
