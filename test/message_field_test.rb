@@ -19,5 +19,11 @@ class MessageFieldTest < Test::Unit::TestCase
       field = Protopuffs::MessageField.new("required", "int32", "age", 1)
       assert_equal 0, field.wire_type
     end
+
+    should "return 0 for int64" do
+      field = Protopuffs::MessageField.new("required", "int64", "age", 1)
+      assert_equal 0, field.wire_type
+    end
+
   end
 end

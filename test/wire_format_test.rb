@@ -42,4 +42,26 @@ class WireFormatTest < Test::Unit::TestCase
     end
   end
 
+  context "a MessageDescriptor with one int64 field" do
+    setup do
+      fields = [Protopuffs::MessageField.new("required", "int64", "a", 1)]
+      Protopuffs::MessageDescriptor.new("Test1", fields)
+      @test1 = Protopuffs::Message::Test1.new
+    end
+
+    should "serialize the message correctly when the field is set to 2^50" do
+      @test1.a = 2**50
+      output = @test1.to_wire_format
+      assert_equal 0x08, output[0]
+      assert_equal 0x80, output[1]
+      assert_equal 0x80, output[2]
+      assert_equal 0x80, output[3]
+      assert_equal 0x80, output[4]
+      assert_equal 0x80, output[5]
+      assert_equal 0x80, output[6]
+      assert_equal 0x80, output[7]
+      assert_equal 0x02, output[8]
+    end
+  end
+
 end

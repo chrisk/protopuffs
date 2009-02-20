@@ -37,7 +37,7 @@ module Protopuffs
 
     def wire_type
       case @type
-      when "int32" then WireType::VARINT
+      when "int32", "int64" then WireType::VARINT
       end
     end
   end
