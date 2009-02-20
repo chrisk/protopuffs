@@ -54,4 +54,18 @@ class WireFormatTest < Test::Unit::TestCase
     should_serialize_to_wire_format 0x08, 0x90, 0x07, 0x10, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x20
   end
 
+
+  context "a message with two bool fields set to false and true, respectively" do
+    setup do
+      fields = [Protopuffs::MessageField.new("required", "bool", "a", 1),
+                Protopuffs::MessageField.new("required", "bool", "b", 2)]
+      Protopuffs::MessageDescriptor.new("Test1", fields)
+      @message = Protopuffs::Message::Test1.new
+      @message.a = false
+      @message.b = true
+    end
+
+    should_serialize_to_wire_format 0x08, 0x00, 0x10, 0x01
+  end
+
 end

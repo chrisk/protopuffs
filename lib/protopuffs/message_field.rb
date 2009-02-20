@@ -12,6 +12,10 @@ module Protopuffs
     end
 
     def to_wire_format_with_value(value)
+      if @type == "bool"
+        value = value ? 1 : 0
+      end
+
       output = StringIO.new
       tag_bytes = (@tag << 3) | wire_type
       output.write self.class.varint_encode(tag_bytes)
@@ -37,7 +41,7 @@ module Protopuffs
 
     def wire_type
       case @type
-      when "int32", "int64", "uint32", "uint64" then WireType::VARINT
+      when "int32", "int64", "uint32", "uint64", "bool" then WireType::VARINT
       end
     end
   end
