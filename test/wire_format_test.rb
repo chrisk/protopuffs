@@ -40,4 +40,18 @@ class WireFormatTest < Test::Unit::TestCase
     should_serialize_to_wire_format 0x08, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x02
   end
 
+
+  context "a message with one uint32 field set to 912 and one uint64 field set to 2^54" do
+    setup do
+      fields = [Protopuffs::MessageField.new("required", "uint32", "a", 1),
+                Protopuffs::MessageField.new("required", "uint64", "b", 2)]
+      Protopuffs::MessageDescriptor.new("Test1", fields)
+      @message = Protopuffs::Message::Test1.new
+      @message.a = 912
+      @message.b = 2**54
+    end
+
+    should_serialize_to_wire_format 0x08, 0x90, 0x07, 0x10, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x20
+  end
+
 end
