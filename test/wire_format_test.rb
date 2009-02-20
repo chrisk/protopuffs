@@ -82,16 +82,14 @@ class WireFormatTest < Test::Unit::TestCase
   end
 
 
-  context "a message with one bytes field set to [0xDE 0xAD 0xBE 0xEF]" do
+  context "a message with a bytes field set to [DE CA FB AD]" do
     setup do
       fields = [Protopuffs::MessageField.new("required", "bytes", "a", 1)]
       Protopuffs::MessageDescriptor.new("Test1", fields)
       @message = Protopuffs::Message::Test1.new
-      bytes = "...."
-      bytes[0] = 0xDE; bytes[1] = 0xAD; bytes[2] = 0xBE; bytes[3] = 0xEF
-      @message.a = bytes
+      @message.a = [0xDE, 0xCA, 0xFB, 0xAD].pack('C*')
     end
 
-    should_serialize_to_wire_format 0x0A, 0x04, 0xDE, 0xAD, 0xBE, 0xEF
+    should_serialize_to_wire_format 0x0A, 0x04, 0xDE, 0xCA, 0xFB, 0xAD
   end
 end
