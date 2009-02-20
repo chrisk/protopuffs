@@ -16,5 +16,14 @@ class Test::Unit::TestCase
     end
   end
 
+  def self.should_serialize_to_wire_format(*expected_bytes)
+    should "serialize to the byte string [#{expected_bytes.map { |b| sprintf("%02X", b) }.join(' ')}]" do
+      actual = @message.to_wire_format
+      expected_bytes.each_with_index do |expected_byte, i|
+        assert_equal actual[i], expected_byte
+      end
+    end
+  end
+
 end
 
