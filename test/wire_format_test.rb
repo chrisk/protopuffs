@@ -80,4 +80,18 @@ class WireFormatTest < Test::Unit::TestCase
 
     should_serialize_to_wire_format 0x12, 0x07, 0x74, 0x65, 0x73, 0x74, 0x69, 0x6E, 0x67
   end
+
+
+  context "a message with one bytes field set to [0xDE 0xAD 0xBE 0xEF]" do
+    setup do
+      fields = [Protopuffs::MessageField.new("required", "bytes", "a", 1)]
+      Protopuffs::MessageDescriptor.new("Test1", fields)
+      @message = Protopuffs::Message::Test1.new
+      bytes = "...."
+      bytes[0] = 0xDE; bytes[1] = 0xAD; bytes[2] = 0xBE; bytes[3] = 0xEF
+      @message.a = bytes
+    end
+
+    should_serialize_to_wire_format 0x0A, 0x04, 0xDE, 0xAD, 0xBE, 0xEF
+  end
 end

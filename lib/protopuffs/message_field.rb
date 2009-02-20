@@ -20,7 +20,10 @@ module Protopuffs
       when WireType::VARINT
         value_bytes = self.class.varint_encode(value)
       when WireType::LENGTH_DELIMITED
-        value_bytes = self.class.varint_encode(value.size) + self.class.string_encode(value)
+        value_bytes = self.class.varint_encode(value.size)
+        value_bytes += self.class.string_encode(value) if @type == "string"
+        value_bytes += value if @type == "bytes"
+        # TODO: I feel some OO polymorphism coming on
       end
 
       tag_bytes = (@tag << 3) | wire_type
@@ -54,7 +57,7 @@ module Protopuffs
     def wire_type
       case @type
       when "int32", "int64", "uint32", "uint64", "bool" then WireType::VARINT
-      when "string"                                     then WireType::LENGTH_DELIMITED
+      when "string", "bytes"                            then WireType::LENGTH_DELIMITED
       end
     end
   end
