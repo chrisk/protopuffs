@@ -14,4 +14,10 @@ class MessageFieldTest < Test::Unit::TestCase
     end
   end
 
+  context "conversion to wire types" do
+    should "return 0 for int32" do
+      field = Protopuffs::MessageField.new("required", "int32", "age", 1)
+      assert_equal 0, field.wire_type
+    end
+  end
 end

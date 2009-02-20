@@ -20,11 +20,18 @@ module Protopuffs
       Protopuffs::Message.module_eval <<-END
         class #{name.capitalize}
           #{attr_accessor_declaration}
+          @@fields = nil
+
+          def self.fields=(value)
+            @@fields = value
+          end
+
           def to_wire_format
-            "#{fields.map { |f| f.tag }.join}"
+            @@fields.map { |f| f.to_wire_format_with_value(send(f.identifier.downcase)) }.join
           end
         end
       END
+      Protopuffs::Message.const_get(name.capitalize).fields = fields
     end
 
     def attr_accessor_declaration

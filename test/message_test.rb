@@ -7,7 +7,7 @@ class MessageTest < Test::Unit::TestCase
       fields = [Protopuffs::MessageField.new("optional", "string", "name", 1),
                 Protopuffs::MessageField.new("optional", "string", "address", 2)]
       Protopuffs::MessageDescriptor.new("Person", fields)
-      assert_equal Protopuffs::Message::Person.new.to_wire_format, "12"
+      Protopuffs::Message::Person
     end
 
     should "create a Message::Person class with accessors for each field" do
