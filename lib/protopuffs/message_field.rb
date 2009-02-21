@@ -17,13 +17,15 @@ module Protopuffs
       end
 
       case wire_type
+      # TODO: I feel some OO polymorphism coming on
       when WireType::VARINT
         value_bytes = self.class.varint_encode(value)
       when WireType::LENGTH_DELIMITED
         value_bytes = self.class.varint_encode(value.size)
         value_bytes += self.class.string_encode(value) if @type == "string"
         value_bytes += value if @type == "bytes"
-        # TODO: I feel some OO polymorphism coming on
+      when WireType::FIXED32
+        value_bytes = self.class.float_encode(value) if @type == "float"
       end
 
       tag_bytes = (@tag << 3) | wire_type
@@ -54,10 +56,15 @@ module Protopuffs
       value.unpack('U*').pack('C*')
     end
 
+    def self.float_encode(value)
+      [value].pack('e')
+    end
+
     def wire_type
       case @type
       when "int32", "int64", "uint32", "uint64", "bool" then WireType::VARINT
       when "string", "bytes"                            then WireType::LENGTH_DELIMITED
+      when "float"                                      then WireType::FIXED32
       end
     end
   end

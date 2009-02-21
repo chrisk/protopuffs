@@ -92,4 +92,16 @@ class WireFormatTest < Test::Unit::TestCase
 
     should_serialize_to_wire_format 0x0A, 0x04, 0xDE, 0xCA, 0xFB, 0xAD
   end
+
+
+  context "a message with one float field set to 1.61803" do
+    setup do
+      fields = [Protopuffs::MessageField.new("required", "float", "a", 1)]
+      Protopuffs::MessageDescriptor.new("Test1", fields)
+      @message = Protopuffs::Message::Test1.new
+      @message.a = 1.61803
+    end
+
+    should_serialize_to_wire_format 0x0D, 0x9B, 0x1B, 0xCF, 0x3F
+  end
 end
