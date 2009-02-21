@@ -11,14 +11,28 @@ module Protopuffs
       @default = default
     end
 
-    def to_wire_format_with_value(value)
-      if @type == "bool"
-        value = value ? 1 : 0
+    def wire_type
+      case @type
+      when "int32", "int64", "uint32", "uint64", "bool" then WireType::VARINT
+      when "string", "bytes"                            then WireType::LENGTH_DELIMITED
+      when "float"                                      then WireType::FIXED32
       end
+    end
 
+    def to_wire_format_with_value(value)
+      value_bytes = encode(value)
+      tag_bytes   = (@tag << 3) | wire_type
+
+      output = StringIO.new
+      output.write self.class.varint_encode(tag_bytes)
+      output.write value_bytes
+      output.string
+    end
+
+    def encode(value)
       case wire_type
-      # TODO: I feel some OO polymorphism coming on
       when WireType::VARINT
+        value = (value ? 1 : 0) if @type == "bool"
         value_bytes = self.class.varint_encode(value)
       when WireType::LENGTH_DELIMITED
         value_bytes = self.class.varint_encode(value.size)
@@ -27,14 +41,9 @@ module Protopuffs
       when WireType::FIXED32
         value_bytes = self.class.float_encode(value) if @type == "float"
       end
-
-      tag_bytes = (@tag << 3) | wire_type
-
-      output = StringIO.new
-      output.write self.class.varint_encode(tag_bytes)
-      output.write value_bytes
-      output.string
+      value_bytes
     end
+
 
     def self.varint_encode(value)
       return [0].pack('C') if value.zero?
@@ -58,14 +67,6 @@ module Protopuffs
 
     def self.float_encode(value)
       [value].pack('e')
-    end
-
-    def wire_type
-      case @type
-      when "int32", "int64", "uint32", "uint64", "bool" then WireType::VARINT
-      when "string", "bytes"                            then WireType::LENGTH_DELIMITED
-      when "float"                                      then WireType::FIXED32
-      end
     end
   end
 
