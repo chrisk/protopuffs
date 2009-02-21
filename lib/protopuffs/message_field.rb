@@ -21,11 +21,13 @@ module Protopuffs
     end
 
     def to_wire_format_with_value(value)
+      key = (@tag << 3) | wire_type
+      key_bytes = self.class.varint_encode(key)
+
       value_bytes = encode(value)
-      tag_bytes   = (@tag << 3) | wire_type
 
       output = StringIO.new
-      output.write self.class.varint_encode(tag_bytes)
+      output.write key_bytes
       output.write value_bytes
       output.string
     end
