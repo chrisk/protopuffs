@@ -14,6 +14,7 @@ module Protopuffs
     def wire_type
       case @type
       when "int32", "int64", "uint32", "uint64", "bool" then WireType::VARINT
+      when "double"                                     then WireType::FIXED64
       when "string", "bytes"                            then WireType::LENGTH_DELIMITED
       when "float"                                      then WireType::FIXED32
       end
@@ -40,6 +41,8 @@ module Protopuffs
         value_bytes += value if @type == "bytes"
       when WireType::FIXED32
         value_bytes = self.class.float_encode(value) if @type == "float"
+      when WireType::FIXED64
+        value_bytes = self.class.double_encode(value) if @type == "double"
       end
       value_bytes
     end
@@ -67,6 +70,10 @@ module Protopuffs
 
     def self.float_encode(value)
       [value].pack('e')
+    end
+
+    def self.double_encode(value)
+      [value].pack('E')
     end
   end
 

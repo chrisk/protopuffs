@@ -54,5 +54,10 @@ class MessageFieldTest < Test::Unit::TestCase
       field = Protopuffs::MessageField.new("required", "float", "ratio", 1)
       assert_equal 5, field.wire_type
     end
+
+    should "return 1 for double" do
+      field = Protopuffs::MessageField.new("required", "double", "ratio", 1)
+      assert_equal 1, field.wire_type
+    end
   end
 end
