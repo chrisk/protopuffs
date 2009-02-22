@@ -16,7 +16,7 @@ module Protopuffs
       when "int32", "int64", "uint32", "uint64", "bool" then WireType::VARINT
       when "double", "fixed64"                          then WireType::FIXED64
       when "string", "bytes"                            then WireType::LENGTH_DELIMITED
-      when "float"                                      then WireType::FIXED32
+      when "float", "fixed32"                           then WireType::FIXED32
       end
     end
 
@@ -43,6 +43,7 @@ module Protopuffs
         value_bytes += value if @type == "bytes"
       when WireType::FIXED32
         value_bytes = self.class.float_encode(value) if @type == "float"
+        value_bytes = self.class.fixed32_encode(value) if @type == "fixed32"
       when WireType::FIXED64
         value_bytes = self.class.double_encode(value) if @type == "double"
         value_bytes = self.class.fixed64_encode(value) if @type == "fixed64"
@@ -81,6 +82,10 @@ module Protopuffs
 
     def self.fixed64_encode(value)
       [value].pack('Q')
+    end
+
+    def self.fixed32_encode(value)
+      [value].pack('V')
     end
   end
 

@@ -128,4 +128,16 @@ class WireFormatTest < Test::Unit::TestCase
   end
 
 
+  context "a message with one fixed32 field set to 2^32-2" do
+    setup do
+      fields = [Protopuffs::MessageField.new("required", "fixed32", "a", 1)]
+      Protopuffs::MessageDescriptor.new("Test1", fields)
+      @message = Protopuffs::Message::Test1.new
+      @message.a = 2**32 - 2
+    end
+
+    should_serialize_to_wire_format 0x0D, 0xFE, 0xFF, 0xFF, 0xFF
+  end
+
+
 end
