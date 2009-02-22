@@ -59,5 +59,10 @@ class MessageFieldTest < Test::Unit::TestCase
       field = Protopuffs::MessageField.new("required", "double", "ratio", 1)
       assert_equal 1, field.wire_type
     end
+
+    should "return 1 for fixed64" do
+      field = Protopuffs::MessageField.new("required", "fixed64", "bigcount", 1)
+      assert_equal 1, field.wire_type
+    end
   end
 end
