@@ -23,5 +23,15 @@ class Test::Unit::TestCase
     end
   end
 
+  def self.should_return_wire_type_for_fields_typed(wire_types)
+    wire_types.each_pair do |wire_type, names|
+      names.each do |name|
+        should "return wire type #{wire_type} for a field with type #{name}" do
+          assert_equal wire_type, Protopuffs::MessageField.new("required", name, "a", 1).wire_type
+        end
+      end
+    end
+  end
+
 end
 
