@@ -140,4 +140,14 @@ class WireFormatTest < Test::Unit::TestCase
   end
 
 
+  context "a message with one repeating int32 field set to 150, 157,372, and 61" do
+    setup do
+      fields = [Protopuffs::MessageField.new("repeated", "int32", "a", 1)]
+      Protopuffs::MessageDescriptor.new("Test1", fields)
+      @message = Protopuffs::Message::Test1.new
+      @message.a = [150, 157_372, 61]
+    end
+
+    should_serialize_to_wire_format 0x08, 0x96, 0x01, 0x08, 0xBC, 0xCD, 0x09, 0x08, 0x3D
+  end
 end
