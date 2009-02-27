@@ -18,6 +18,7 @@ module Protopuffs
       when "double", "fixed64"                          then WireType::FIXED64
       when "string", "bytes"                            then WireType::LENGTH_DELIMITED
       when "float", "fixed32"                           then WireType::FIXED32
+      else WireType::LENGTH_DELIMITED # embedded messages
       end
     end
 
@@ -40,9 +41,14 @@ module Protopuffs
         value = (value ? 1 : 0) if @type == "bool"
         value_bytes = self.class.varint_encode(value)
       when WireType::LENGTH_DELIMITED
-        value_bytes = self.class.varint_encode(value.size)
-        value_bytes += self.class.string_encode(value) if @type == "string"
-        value_bytes += value if @type == "bytes"
+        if value.respond_to?(:to_wire_format)
+          embedded_bytes = value.to_wire_format
+          value_bytes = self.class.varint_encode(embedded_bytes.size) + embedded_bytes
+        else
+          value_bytes = self.class.varint_encode(value.size)
+          value_bytes += self.class.string_encode(value) if @type == "string"
+          value_bytes += value if @type == "bytes"
+        end
       when WireType::FIXED32
         value_bytes = self.class.float_encode(value) if @type == "float"
         value_bytes = self.class.fixed32_encode(value) if @type == "fixed32"

@@ -150,4 +150,23 @@ class WireFormatTest < Test::Unit::TestCase
 
     should_serialize_to_wire_format 0x08, 0x96, 0x01, 0x08, 0xBC, 0xCD, 0x09, 0x08, 0x3D
   end
+
+
+  context "a message with one embedded-message field Test1 (which has an int32 set to 150)" do
+    # from http://code.google.com/apis/protocolbuffers/docs/encoding.html#embedded
+    setup do
+      test1_fields = [Protopuffs::MessageField.new("required", "int32", "a", 1)]
+      Protopuffs::MessageDescriptor.new("Test1", test1_fields)
+      @embedded_message = Protopuffs::Message::Test1.new
+      @embedded_message.a = 150
+
+      test3_fields = [Protopuffs::MessageField.new("required", "Test1", "c", 3)]
+      Protopuffs::MessageDescriptor.new("Test3", test3_fields)
+      @message = Protopuffs::Message::Test3.new
+      @message.c = @embedded_message
+    end
+
+    should_serialize_to_wire_format 0x1A, 0x03, 0x08, 0x96, 0x01
+  end
+
 end
