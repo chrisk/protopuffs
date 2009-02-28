@@ -105,6 +105,7 @@ class WireFormatTest < Test::Unit::TestCase
     should_serialize_to_wire_format 0x0D, 0x9B, 0x1B, 0xCF, 0x3F
   end
 
+
   context "a message with one double field set to 1.61803" do
     setup do
       fields = [Protopuffs::MessageField.new("required", "double", "a", 1)]
@@ -115,6 +116,7 @@ class WireFormatTest < Test::Unit::TestCase
 
     should_serialize_to_wire_format 0x09, 0x6C, 0x26, 0xDF, 0x6C, 0x73, 0xE3, 0xF9, 0x3F
   end
+
 
   context "a message with one fixed64 field set to 2^62-15" do
     setup do
