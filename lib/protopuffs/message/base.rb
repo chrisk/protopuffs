@@ -34,14 +34,21 @@ module Protopuffs
         end
       end
 
+      attr_reader :buffer
+
       def initialize
         if self.class == Base
           raise "#{self.class} should not be instantiated directly. Use the factory #{self.class}.define_message_class instead."
         end
+        @buffer = StringIO.new
       end
 
       def to_wire_format
-        self.class.fields.map { |f| f.to_wire_format_with_value(send(f.identifier.downcase)) }.join
+        self.class.fields.each do |field|
+          value = send(field.identifier.downcase)
+          @buffer.write field.to_wire_format_with_value(value)
+        end
+        @buffer.string
       end
 
     end

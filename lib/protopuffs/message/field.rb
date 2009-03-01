@@ -9,7 +9,6 @@ module Protopuffs
       @identifier = identifier
       @tag = tag
       @default = default
-      @buffer = StringIO.new
     end
 
     def wire_type
@@ -22,17 +21,22 @@ module Protopuffs
       end
     end
 
+    def key
+      (@tag << 3) | wire_type
+    end
+
+    def repeated?
+      @modifier == "repeated"
+    end
+
     def to_wire_format_with_value(value)
-      @buffer.truncate(0)
-      value = [value] unless @modifier == "repeated" && value.is_a?(Enumerable)
+      field_encoder = lambda { |val| self.class.varint_encode(key) + encode(val) }
 
-      key = (@tag << 3) | wire_type
-
-      value.each do |val|
-        @buffer.write self.class.varint_encode(key)
-        @buffer.write encode(val)
+      if repeated?
+        value.map(&field_encoder).join
+      else
+        field_encoder.call(value)
       end
-      @buffer.string
     end
 
     def encode(value)
