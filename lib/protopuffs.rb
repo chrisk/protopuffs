@@ -1,7 +1,8 @@
 require "protopuffs/message/base"
 require "protopuffs/message/field"
-require "protopuffs/parser"
-require "protopuffs/wire_type"
+require "protopuffs/message/wire_type"
+require "protopuffs/parser/parser"
+
 
 module Protopuffs
   class ParseError < StandardError; end
