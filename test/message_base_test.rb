@@ -33,6 +33,7 @@ class MessageBaseTest < Test::Unit::TestCase
     end
   end
 
+
   context ".define_message_class with fields that have invalid tags" do
     should "raise a Protopuffs::ParseError when a tag is too large" do
       fields = [Protopuffs::MessageField.new("optional", "int32", "name", 1),
@@ -55,6 +56,13 @@ class MessageBaseTest < Test::Unit::TestCase
       assert_raises Protopuffs::ParseError do
         Protopuffs::Message::Base.define_message_class("Person", fields)
       end
+    end
+  end
+
+
+  should "not allow you to instantiate Message::Base directly" do
+    assert_raises RuntimeError do
+      Protopuffs::Message::Base.new
     end
   end
 

@@ -34,6 +34,11 @@ module Protopuffs
         end
       end
 
+      def initialize
+        if self.class == Base
+          raise "#{self.class} should not be instantiated directly. Use the factory #{self.class}.define_message_class instead."
+        end
+      end
 
       def to_wire_format
         self.class.fields.map { |f| f.to_wire_format_with_value(send(f.identifier.downcase)) }.join
