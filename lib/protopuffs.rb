@@ -1,5 +1,5 @@
-require "protopuffs/message_descriptor"
-require "protopuffs/message_field"
+require "protopuffs/message/base"
+require "protopuffs/message/field"
 require "protopuffs/parser"
 require "protopuffs/wire_type"
 

@@ -37,7 +37,7 @@ module Protopuffs
         end
         
         def build
-          MessageDescriptor.new(name, body.empty? ? [] : body.build)
+          Message::Base.define_message_class(name, body.empty? ? [] : body.build)
         end
       }
     end

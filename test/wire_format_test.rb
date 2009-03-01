@@ -6,7 +6,7 @@ class WireFormatTest < Test::Unit::TestCase
     # from http://code.google.com/apis/protocolbuffers/docs/encoding.html#simple
     setup do
       fields = [Protopuffs::MessageField.new("required", "int32", "a", 1)]
-      Protopuffs::MessageDescriptor.new("Test1", fields)
+      Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
       @message.a = 150
     end
@@ -19,7 +19,7 @@ class WireFormatTest < Test::Unit::TestCase
     setup do
       fields = [Protopuffs::MessageField.new("required", "int32", "a", 1),
                 Protopuffs::MessageField.new("required", "int32", "b", 2)]
-      Protopuffs::MessageDescriptor.new("Test1", fields)
+      Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
       @message.a = 150
       @message.b = 157_372
@@ -32,7 +32,7 @@ class WireFormatTest < Test::Unit::TestCase
   context "a message with one int64 field set to 2^50" do
     setup do
       fields = [Protopuffs::MessageField.new("required", "int64", "a", 1)]
-      Protopuffs::MessageDescriptor.new("Test1", fields)
+      Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
       @message.a = 2**50
     end
@@ -45,7 +45,7 @@ class WireFormatTest < Test::Unit::TestCase
     setup do
       fields = [Protopuffs::MessageField.new("required", "uint32", "a", 1),
                 Protopuffs::MessageField.new("required", "uint64", "b", 2)]
-      Protopuffs::MessageDescriptor.new("Test1", fields)
+      Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
       @message.a = 912
       @message.b = 2**54
@@ -59,7 +59,7 @@ class WireFormatTest < Test::Unit::TestCase
     setup do
       fields = [Protopuffs::MessageField.new("required", "bool", "a", 1),
                 Protopuffs::MessageField.new("required", "bool", "b", 2)]
-      Protopuffs::MessageDescriptor.new("Test1", fields)
+      Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
       @message.a = false
       @message.b = true
@@ -73,7 +73,7 @@ class WireFormatTest < Test::Unit::TestCase
     setup do
       # from http://code.google.com/apis/protocolbuffers/docs/encoding.html#types
       fields = [Protopuffs::MessageField.new("required", "string", "b", 2)]
-      Protopuffs::MessageDescriptor.new("Test2", fields)
+      Protopuffs::Message::Base.define_message_class("Test2", fields)
       @message = Protopuffs::Message::Test2.new
       @message.b = "testing"
     end
@@ -85,7 +85,7 @@ class WireFormatTest < Test::Unit::TestCase
   context "a message with a bytes field set to [DE CA FB AD]" do
     setup do
       fields = [Protopuffs::MessageField.new("required", "bytes", "a", 1)]
-      Protopuffs::MessageDescriptor.new("Test1", fields)
+      Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
       @message.a = [0xDE, 0xCA, 0xFB, 0xAD].pack('C*')
     end
@@ -97,7 +97,7 @@ class WireFormatTest < Test::Unit::TestCase
   context "a message with one float field set to 1.61803" do
     setup do
       fields = [Protopuffs::MessageField.new("required", "float", "a", 1)]
-      Protopuffs::MessageDescriptor.new("Test1", fields)
+      Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
       @message.a = 1.61803
     end
@@ -109,7 +109,7 @@ class WireFormatTest < Test::Unit::TestCase
   context "a message with one double field set to 1.61803" do
     setup do
       fields = [Protopuffs::MessageField.new("required", "double", "a", 1)]
-      Protopuffs::MessageDescriptor.new("Test1", fields)
+      Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
       @message.a = 1.61803
     end
@@ -121,7 +121,7 @@ class WireFormatTest < Test::Unit::TestCase
   context "a message with one fixed64 field set to 2^62-15" do
     setup do
       fields = [Protopuffs::MessageField.new("required", "fixed64", "a", 1)]
-      Protopuffs::MessageDescriptor.new("Test1", fields)
+      Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
       @message.a = 2**62 - 15
     end
@@ -133,7 +133,7 @@ class WireFormatTest < Test::Unit::TestCase
   context "a message with one fixed32 field set to 2^32-2" do
     setup do
       fields = [Protopuffs::MessageField.new("required", "fixed32", "a", 1)]
-      Protopuffs::MessageDescriptor.new("Test1", fields)
+      Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
       @message.a = 2**32 - 2
     end
@@ -145,7 +145,7 @@ class WireFormatTest < Test::Unit::TestCase
   context "a message with one repeating int32 field set to 150, 157,372, and 61" do
     setup do
       fields = [Protopuffs::MessageField.new("repeated", "int32", "a", 1)]
-      Protopuffs::MessageDescriptor.new("Test1", fields)
+      Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
       @message.a = [150, 157_372, 61]
     end
@@ -158,12 +158,12 @@ class WireFormatTest < Test::Unit::TestCase
     # from http://code.google.com/apis/protocolbuffers/docs/encoding.html#embedded
     setup do
       test1_fields = [Protopuffs::MessageField.new("required", "int32", "a", 1)]
-      Protopuffs::MessageDescriptor.new("Test1", test1_fields)
+      Protopuffs::Message::Base.define_message_class("Test1", test1_fields)
       @embedded_message = Protopuffs::Message::Test1.new
       @embedded_message.a = 150
 
       test3_fields = [Protopuffs::MessageField.new("required", "Test1", "c", 3)]
-      Protopuffs::MessageDescriptor.new("Test3", test3_fields)
+      Protopuffs::Message::Base.define_message_class("Test3", test3_fields)
       @message = Protopuffs::Message::Test3.new
       @message.c = @embedded_message
     end
