@@ -8,10 +8,9 @@ class WireFormatEncoderTest < Test::Unit::TestCase
       fields = [Protopuffs::MessageField.new("required", "int32", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
-      @message.a = 150
     end
 
-    should_serialize_to_wire_format 0x08, 0x96, 0x01
+    should_encode_wire_format_from_fields [0x08, 0x96, 0x01], :a => 150
   end
 
 
@@ -21,11 +20,10 @@ class WireFormatEncoderTest < Test::Unit::TestCase
                 Protopuffs::MessageField.new("required", "int32", "b", 2)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
-      @message.a = 150
-      @message.b = 157_372
     end
 
-    should_serialize_to_wire_format 0x08, 0x96, 0x01, 0x10, 0xBC, 0xCD, 0x09
+    should_encode_wire_format_from_fields [0x08, 0x96, 0x01, 0x10, 0xBC, 0xCD, 0x09],
+                                          :a => 150, :b => 157_372
   end
 
 
@@ -34,10 +32,10 @@ class WireFormatEncoderTest < Test::Unit::TestCase
       fields = [Protopuffs::MessageField.new("required", "int64", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
-      @message.a = 2**50
     end
 
-    should_serialize_to_wire_format 0x08, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x02
+    should_encode_wire_format_from_fields [0x08, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x02],
+                                          :a => 2**50
   end
 
 
@@ -47,11 +45,10 @@ class WireFormatEncoderTest < Test::Unit::TestCase
                 Protopuffs::MessageField.new("required", "uint64", "b", 2)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
-      @message.a = 912
-      @message.b = 2**54
     end
 
-    should_serialize_to_wire_format 0x08, 0x90, 0x07, 0x10, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x20
+    should_encode_wire_format_from_fields [0x08, 0x90, 0x07, 0x10, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x20],
+                                          :a => 912, :b => 2**54
   end
 
 
@@ -61,11 +58,10 @@ class WireFormatEncoderTest < Test::Unit::TestCase
                 Protopuffs::MessageField.new("required", "bool", "b", 2)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
-      @message.a = false
-      @message.b = true
     end
 
-    should_serialize_to_wire_format 0x08, 0x00, 0x10, 0x01
+    should_encode_wire_format_from_fields [0x08, 0x00, 0x10, 0x01],
+                                          :a => false, :b => true
   end
 
 
@@ -75,10 +71,10 @@ class WireFormatEncoderTest < Test::Unit::TestCase
       fields = [Protopuffs::MessageField.new("required", "string", "b", 2)]
       Protopuffs::Message::Base.define_message_class("Test2", fields)
       @message = Protopuffs::Message::Test2.new
-      @message.b = "testing"
     end
 
-    should_serialize_to_wire_format 0x12, 0x07, 0x74, 0x65, 0x73, 0x74, 0x69, 0x6E, 0x67
+    should_encode_wire_format_from_fields [0x12, 0x07, 0x74, 0x65, 0x73, 0x74, 0x69, 0x6E, 0x67],
+                                          :b => "testing"
   end
 
 
@@ -87,10 +83,10 @@ class WireFormatEncoderTest < Test::Unit::TestCase
       fields = [Protopuffs::MessageField.new("required", "bytes", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
-      @message.a = [0xDE, 0xCA, 0xFB, 0xAD].pack('C*')
     end
 
-    should_serialize_to_wire_format 0x0A, 0x04, 0xDE, 0xCA, 0xFB, 0xAD
+    should_encode_wire_format_from_fields [0x0A, 0x04, 0xDE, 0xCA, 0xFB, 0xAD],
+                                          :a => [0xDE, 0xCA, 0xFB, 0xAD].pack('C*')
   end
 
 
@@ -99,10 +95,10 @@ class WireFormatEncoderTest < Test::Unit::TestCase
       fields = [Protopuffs::MessageField.new("required", "float", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
-      @message.a = 1.61803
     end
 
-    should_serialize_to_wire_format 0x0D, 0x9B, 0x1B, 0xCF, 0x3F
+    should_encode_wire_format_from_fields [0x0D, 0x9B, 0x1B, 0xCF, 0x3F],
+                                          :a => 1.61803
   end
 
 
@@ -111,10 +107,10 @@ class WireFormatEncoderTest < Test::Unit::TestCase
       fields = [Protopuffs::MessageField.new("required", "double", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
-      @message.a = 1.61803
     end
 
-    should_serialize_to_wire_format 0x09, 0x6C, 0x26, 0xDF, 0x6C, 0x73, 0xE3, 0xF9, 0x3F
+    should_encode_wire_format_from_fields [0x09, 0x6C, 0x26, 0xDF, 0x6C, 0x73, 0xE3, 0xF9, 0x3F],
+                                          :a => 1.61803
   end
 
 
@@ -123,10 +119,10 @@ class WireFormatEncoderTest < Test::Unit::TestCase
       fields = [Protopuffs::MessageField.new("required", "fixed64", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
-      @message.a = 2**62 - 15
     end
 
-    should_serialize_to_wire_format 0x09, 0xF1, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x3F
+    should_encode_wire_format_from_fields [0x09, 0xF1, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x3F],
+                                          :a => 2**62 - 15
   end
 
 
@@ -135,10 +131,10 @@ class WireFormatEncoderTest < Test::Unit::TestCase
       fields = [Protopuffs::MessageField.new("required", "fixed32", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
-      @message.a = 2**32 - 2
     end
 
-    should_serialize_to_wire_format 0x0D, 0xFE, 0xFF, 0xFF, 0xFF
+    should_encode_wire_format_from_fields [0x0D, 0xFE, 0xFF, 0xFF, 0xFF],
+                                          :a => 2**32 - 2
   end
 
 
@@ -147,10 +143,10 @@ class WireFormatEncoderTest < Test::Unit::TestCase
       fields = [Protopuffs::MessageField.new("repeated", "int32", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
-      @message.a = [150, 157_372, 61]
     end
 
-    should_serialize_to_wire_format 0x08, 0x96, 0x01, 0x08, 0xBC, 0xCD, 0x09, 0x08, 0x3D
+    should_encode_wire_format_from_fields [0x08, 0x96, 0x01, 0x08, 0xBC, 0xCD, 0x09, 0x08, 0x3D],
+                                          :a => [150, 157_372, 61]
   end
 
 
@@ -159,16 +155,14 @@ class WireFormatEncoderTest < Test::Unit::TestCase
     setup do
       test1_fields = [Protopuffs::MessageField.new("required", "int32", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", test1_fields)
-      @embedded_message = Protopuffs::Message::Test1.new
-      @embedded_message.a = 150
 
       test3_fields = [Protopuffs::MessageField.new("required", "Test1", "c", 3)]
       Protopuffs::Message::Base.define_message_class("Test3", test3_fields)
       @message = Protopuffs::Message::Test3.new
-      @message.c = @embedded_message
     end
 
-    should_serialize_to_wire_format 0x1A, 0x03, 0x08, 0x96, 0x01
+    should_encode_wire_format_from_fields [0x1A, 0x03, 0x08, 0x96, 0x01],
+                                          :c => lambda { msg = Protopuffs::Message::Test1.new; msg.a = 150; msg }
   end
 
 end
