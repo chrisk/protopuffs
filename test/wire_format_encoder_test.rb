@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/test_helper'
 
-class WireFormatTest < Test::Unit::TestCase
+class WireFormatEncoderTest < Test::Unit::TestCase
 
   context "a message with one int32 field set to 150" do
     # from http://code.google.com/apis/protocolbuffers/docs/encoding.html#simple
