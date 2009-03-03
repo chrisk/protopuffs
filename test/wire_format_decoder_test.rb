@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/test_helper'
 
 class WireFormatDecoderTest < Test::Unit::TestCase
 
-  context "a message with one int32 field tagged 1" do
+  context "a message with one int32 field tagged #1" do
     # from http://code.google.com/apis/protocolbuffers/docs/encoding.html#simple
     setup do
       fields = [Protopuffs::MessageField.new("required", "int32", "a", 1)]

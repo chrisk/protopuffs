@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/test_helper'
 
 class WireFormatEncoderTest < Test::Unit::TestCase
 
-  context "a message with one int32 field set to 150" do
+  context "a message with one int32 field tagged #1" do
     # from http://code.google.com/apis/protocolbuffers/docs/encoding.html#simple
     setup do
       fields = [Protopuffs::MessageField.new("required", "int32", "a", 1)]
@@ -14,7 +14,7 @@ class WireFormatEncoderTest < Test::Unit::TestCase
   end
 
 
-  context "a message with two int32 fields set to 150 and 157,372, respectively" do
+  context "a message with two int32 fields tagged #1 and #2" do
     setup do
       fields = [Protopuffs::MessageField.new("required", "int32", "a", 1),
                 Protopuffs::MessageField.new("required", "int32", "b", 2)]
@@ -27,7 +27,7 @@ class WireFormatEncoderTest < Test::Unit::TestCase
   end
 
 
-  context "a message with one int64 field set to 2^50" do
+  context "a message with one int64 field tagged #1" do
     setup do
       fields = [Protopuffs::MessageField.new("required", "int64", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
@@ -39,7 +39,7 @@ class WireFormatEncoderTest < Test::Unit::TestCase
   end
 
 
-  context "a message with one uint32 field set to 912 and one uint64 field set to 2^54" do
+  context "a message with one uint32 field tagged #1 and one uint64 field tagged #2" do
     setup do
       fields = [Protopuffs::MessageField.new("required", "uint32", "a", 1),
                 Protopuffs::MessageField.new("required", "uint64", "b", 2)]
@@ -52,7 +52,7 @@ class WireFormatEncoderTest < Test::Unit::TestCase
   end
 
 
-  context "a message with two bool fields set to false and true, respectively" do
+  context "a message with two bool fields tagged #1 and #2" do
     setup do
       fields = [Protopuffs::MessageField.new("required", "bool", "a", 1),
                 Protopuffs::MessageField.new("required", "bool", "b", 2)]
@@ -65,7 +65,7 @@ class WireFormatEncoderTest < Test::Unit::TestCase
   end
 
 
-  context "a message with one string field set to 'testing'" do
+  context "a message with one string field tagged #2" do
     setup do
       # from http://code.google.com/apis/protocolbuffers/docs/encoding.html#types
       fields = [Protopuffs::MessageField.new("required", "string", "b", 2)]
@@ -78,7 +78,7 @@ class WireFormatEncoderTest < Test::Unit::TestCase
   end
 
 
-  context "a message with a bytes field set to [DE CA FB AD]" do
+  context "a message with a bytes field tagged #1" do
     setup do
       fields = [Protopuffs::MessageField.new("required", "bytes", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
@@ -90,7 +90,7 @@ class WireFormatEncoderTest < Test::Unit::TestCase
   end
 
 
-  context "a message with one float field set to 1.61803" do
+  context "a message with one float field tagged #1" do
     setup do
       fields = [Protopuffs::MessageField.new("required", "float", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
@@ -102,7 +102,7 @@ class WireFormatEncoderTest < Test::Unit::TestCase
   end
 
 
-  context "a message with one double field set to 1.61803" do
+  context "a message with one double field tagged #1" do
     setup do
       fields = [Protopuffs::MessageField.new("required", "double", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
@@ -114,7 +114,7 @@ class WireFormatEncoderTest < Test::Unit::TestCase
   end
 
 
-  context "a message with one fixed64 field set to 2^62-15" do
+  context "a message with one fixed64 field tagged #1" do
     setup do
       fields = [Protopuffs::MessageField.new("required", "fixed64", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
@@ -126,7 +126,7 @@ class WireFormatEncoderTest < Test::Unit::TestCase
   end
 
 
-  context "a message with one fixed32 field set to 2^32-2" do
+  context "a message with one fixed32 field tagged #1" do
     setup do
       fields = [Protopuffs::MessageField.new("required", "fixed32", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
@@ -138,7 +138,7 @@ class WireFormatEncoderTest < Test::Unit::TestCase
   end
 
 
-  context "a message with one repeating int32 field set to 150, 157,372, and 61" do
+  context "a message with one repeating int32 field tagged #1" do
     setup do
       fields = [Protopuffs::MessageField.new("repeated", "int32", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
@@ -150,7 +150,7 @@ class WireFormatEncoderTest < Test::Unit::TestCase
   end
 
 
-  context "a message with one embedded-message field Test1 (which has an int32 set to 150)" do
+  context "a message with one embedded-message field Test1 tagged #3 (where Test1 has an int32 field tagged #1)" do
     # from http://code.google.com/apis/protocolbuffers/docs/encoding.html#embedded
     setup do
       test1_fields = [Protopuffs::MessageField.new("required", "int32", "a", 1)]
