@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/test_helper'
 
-class WireFormatEncoderTest < Test::Unit::TestCase
+class WireFormatTest < Test::Unit::TestCase
 
   context "a message with one int32 field tagged #1" do
     # from http://code.google.com/apis/protocolbuffers/docs/encoding.html#simple
@@ -11,6 +11,10 @@ class WireFormatEncoderTest < Test::Unit::TestCase
     end
 
     should_encode_wire_format_from_fields [0x08, 0x96, 0x01], :a => 150
+    should_decode_wire_format_to_fields   [0x08, 0x96, 0x01], :a => 150
+
+    # should ignore unknown fields: this message also has an int32 tagged #2 with value 157,372
+    should_decode_wire_format_to_fields [0x08, 0x96, 0x01, 0x10, 0xBC, 0xCD, 0x09], :a => 150
   end
 
 
@@ -24,6 +28,8 @@ class WireFormatEncoderTest < Test::Unit::TestCase
 
     should_encode_wire_format_from_fields [0x08, 0x96, 0x01, 0x10, 0xBC, 0xCD, 0x09],
                                           :a => 150, :b => 157_372
+    should_decode_wire_format_to_fields   [0x08, 0x96, 0x01, 0x10, 0xBC, 0xCD, 0x09],
+                                          :a => 150, :b => 157_372
   end
 
 
@@ -35,6 +41,8 @@ class WireFormatEncoderTest < Test::Unit::TestCase
     end
 
     should_encode_wire_format_from_fields [0x08, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x02],
+                                          :a => 2**50
+    should_decode_wire_format_to_fields   [0x08, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x02],
                                           :a => 2**50
   end
 
@@ -48,6 +56,8 @@ class WireFormatEncoderTest < Test::Unit::TestCase
     end
 
     should_encode_wire_format_from_fields [0x08, 0x90, 0x07, 0x10, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x20],
+                                          :a => 912, :b => 2**54
+    should_decode_wire_format_to_fields   [0x08, 0x90, 0x07, 0x10, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x20],
                                           :a => 912, :b => 2**54
   end
 
