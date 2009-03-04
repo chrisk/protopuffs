@@ -38,9 +38,11 @@ class Test::Unit::TestCase
     should "decode the byte string #{inspect_bytes(actual_bytes)} to the fields #{expected_fields.inspect}" do
       buffer = StringIO.new(actual_bytes.pack('C*'))
       @message.from_wire_format(buffer)
-      expected_fields.each_pair do |name, value|
-        assert_equal value, @message.send(name)
-      end
+      actual_fields = @message.class.fields.inject({}) { |hash, field|
+        hash[field.identifier.to_sym] = @message.send(field.identifier)
+        hash
+      }
+      assert_equal expected_fields, actual_fields
     end
   end
 

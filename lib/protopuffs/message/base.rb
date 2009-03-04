@@ -51,6 +51,19 @@ module Protopuffs
         @buffer.string
       end
 
+      def from_wire_format(buffer)
+        @buffer = buffer
+        until buffer.eof?
+          tag, value = MessageField.shift_tag_and_value(buffer)
+          assign_field_by_tag(tag, value)
+        end
+      end
+
+      def assign_field_by_tag(tag, value)
+        field = self.class.fields.find { |f| f.tag == tag }
+        return if field.nil?
+        send("#{field.identifier.downcase}=", value)
+      end
     end
 
   end

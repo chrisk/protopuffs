@@ -99,6 +99,42 @@ module Protopuffs
     def self.fixed32_encode(value)
       [value].pack('V')
     end
+
+    # returns a tag and decoded value
+    def self.shift_tag_and_value(buffer)
+      bits = 0
+      bytes = shift_varint(buffer)
+      bytes.each_with_index do |byte, index|
+        byte &= 0b01111111
+        bits |= byte << (7 * index)
+      end
+      wire_type = bits & 0b00000111
+      tag = bits >> 3
+
+      if wire_type == WireType::VARINT
+        value = varint_decode(shift_varint(buffer))
+      end
+
+      [tag, value]
+    end
+
+    def self.shift_varint(buffer)
+      bytes = []
+      begin
+        byte = buffer.readchar
+        bytes << (byte & 0b01111111)
+      end while byte >> 7 == 1
+      bytes
+    end
+
+    def self.varint_decode(bytes)
+      value = 0
+      bytes.each_with_index do |byte, index|
+        value |= byte << (7 * index)
+      end
+      value
+    end
+
   end
 
 end

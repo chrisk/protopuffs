@@ -11,6 +11,9 @@ class WireFormatDecoderTest < Test::Unit::TestCase
     end
 
     should_decode_wire_format_to_fields [0x08, 0x96, 0x01], :a => 150
+
+    # should ignore unknown fields: this message also has an int32 tagged #2 with value 157,372
+    should_decode_wire_format_to_fields [0x08, 0x96, 0x01, 0x10, 0xBC, 0xCD, 0x09], :a => 150
   end
 
 end
