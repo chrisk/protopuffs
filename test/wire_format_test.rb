@@ -115,6 +115,9 @@ class WireFormatTest < Test::Unit::TestCase
 
     should_encode_wire_format_from_fields [0x0D, 0x9B, 0x1B, 0xCF, 0x3F],
                                           :a => 1.61803
+    # TODO: how to resolve finite-precision float accuracy problem?
+    should_decode_wire_format_to_fields   [0x0D, 0x9B, 0x1B, 0xCF, 0x3F],
+                                          :a => 1.61802995204926
   end
 
 
@@ -126,6 +129,8 @@ class WireFormatTest < Test::Unit::TestCase
     end
 
     should_encode_wire_format_from_fields [0x09, 0x6C, 0x26, 0xDF, 0x6C, 0x73, 0xE3, 0xF9, 0x3F],
+                                          :a => 1.61803
+    should_decode_wire_format_to_fields   [0x09, 0x6C, 0x26, 0xDF, 0x6C, 0x73, 0xE3, 0xF9, 0x3F],
                                           :a => 1.61803
   end
 

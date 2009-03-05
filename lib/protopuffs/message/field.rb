@@ -116,6 +116,10 @@ module Protopuffs
         value_bytes = shift_varint(buffer)
       when WireType::LENGTH_DELIMITED
         value_bytes = shift_length_delimited(buffer)
+      when WireType::FIXED32
+        value_bytes = shift_fixed32(buffer)
+      when WireType::FIXED64
+        value_bytes = shift_fixed64(buffer)
       end
 
       [tag, value_bytes]
@@ -139,6 +143,14 @@ module Protopuffs
       buffer.read(value_length)
     end
 
+    def self.shift_fixed32(buffer)
+      buffer.read(4)
+    end
+
+    def self.shift_fixed64(buffer)
+      buffer.read(8)
+    end
+
     def decode(value_bytes)
       case wire_type
       when WireType::VARINT
@@ -149,6 +161,10 @@ module Protopuffs
         end
       when WireType::LENGTH_DELIMITED
         value = value_bytes
+      when WireType::FIXED32
+        value = self.class.float_decode(value_bytes)
+      when WireType::FIXED64
+        value = self.class.double_decode(value_bytes)
       end
       value
     end
@@ -161,6 +177,13 @@ module Protopuffs
       value
     end
 
+    def self.float_decode(bytes)
+      bytes.unpack('e').first
+    end
+
+    def self.double_decode(bytes)
+      bytes.unpack('E').first
+    end
   end
 
 end
