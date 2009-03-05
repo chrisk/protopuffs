@@ -100,8 +100,8 @@ module Protopuffs
       [value].pack('V')
     end
 
-    # returns a tag and decoded value
-    def self.shift_tag_and_value(buffer)
+    # note: returns two values
+    def self.shift_tag_and_value_bytes(buffer)
       bits = 0
       bytes = shift_varint(buffer)
       bytes.each_with_index do |byte, index|
@@ -112,10 +112,10 @@ module Protopuffs
       tag = bits >> 3
 
       if wire_type == WireType::VARINT
-        value = varint_decode(shift_varint(buffer))
+        value_bytes = shift_varint(buffer)
       end
 
-      [tag, value]
+      [tag, value_bytes]
     end
 
     def self.shift_varint(buffer)
@@ -125,6 +125,18 @@ module Protopuffs
         bytes << (byte & 0b01111111)
       end while byte >> 7 == 1
       bytes
+    end
+
+    def decode(value_bytes)
+      case wire_type
+      when WireType::VARINT
+        value = self.class.varint_decode(value_bytes)
+        if @type == "bool"
+          value = true  if value == 1
+          value = false if value == 0
+        end
+      end
+      value
     end
 
     def self.varint_decode(bytes)

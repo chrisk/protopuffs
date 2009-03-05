@@ -54,16 +54,13 @@ module Protopuffs
       def from_wire_format(buffer)
         @buffer = buffer
         until buffer.eof?
-          tag, value = MessageField.shift_tag_and_value(buffer)
-          assign_field_by_tag(tag, value)
+          tag, value_bytes = MessageField.shift_tag_and_value_bytes(buffer)
+          field = self.class.fields.find { |field| field.tag == tag }
+          next if field.nil?
+          send("#{field.identifier.downcase}=", field.decode(value_bytes))
         end
       end
 
-      def assign_field_by_tag(tag, value)
-        field = self.class.fields.find { |f| f.tag == tag }
-        return if field.nil?
-        send("#{field.identifier.downcase}=", value)
-      end
     end
 
   end
