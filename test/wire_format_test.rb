@@ -87,6 +87,8 @@ class WireFormatTest < Test::Unit::TestCase
 
     should_encode_wire_format_from_fields [0x12, 0x07, 0x74, 0x65, 0x73, 0x74, 0x69, 0x6E, 0x67],
                                           :b => "testing"
+    should_decode_wire_format_to_fields   [0x12, 0x07, 0x74, 0x65, 0x73, 0x74, 0x69, 0x6E, 0x67],
+                                          :b => "testing"
   end
 
 

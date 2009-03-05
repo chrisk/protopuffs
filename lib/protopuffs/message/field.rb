@@ -111,8 +111,11 @@ module Protopuffs
       wire_type = bits & 0b00000111
       tag = bits >> 3
 
-      if wire_type == WireType::VARINT
+      case wire_type
+      when WireType::VARINT
         value_bytes = shift_varint(buffer)
+      when WireType::LENGTH_DELIMITED
+        value_bytes = shift_length_delimited(buffer)
       end
 
       [tag, value_bytes]
@@ -127,6 +130,15 @@ module Protopuffs
       bytes
     end
 
+    def self.shift_length_delimited(buffer)
+      bytes = shift_varint(buffer)
+      value_length = 0
+      bytes.each_with_index do |byte, index|
+        value_length |= byte << (7 * index)
+      end
+      buffer.read(value_length)
+    end
+
     def decode(value_bytes)
       case wire_type
       when WireType::VARINT
@@ -135,6 +147,8 @@ module Protopuffs
           value = true  if value == 1
           value = false if value == 0
         end
+      when WireType::LENGTH_DELIMITED
+        value = value_bytes
       end
       value
     end
