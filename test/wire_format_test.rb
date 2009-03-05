@@ -101,6 +101,8 @@ class WireFormatTest < Test::Unit::TestCase
 
     should_encode_wire_format_from_fields [0x0A, 0x04, 0xDE, 0xCA, 0xFB, 0xAD],
                                           :a => [0xDE, 0xCA, 0xFB, 0xAD].pack('C*')
+    should_decode_wire_format_to_fields   [0x0A, 0x04, 0xDE, 0xCA, 0xFB, 0xAD],
+                                          :a => [0xDE, 0xCA, 0xFB, 0xAD].pack('C*')
   end
 
 
