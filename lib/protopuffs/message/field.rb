@@ -164,7 +164,8 @@ module Protopuffs
       when WireType::FIXED32
         value = self.class.float_decode(value_bytes)
       when WireType::FIXED64
-        value = self.class.double_decode(value_bytes)
+        value = self.class.double_decode(value_bytes) if @type == "double"
+        value = self.class.fixed64_decode(value_bytes) if @type == "fixed64"
       end
       value
     end
@@ -183,6 +184,10 @@ module Protopuffs
 
     def self.double_decode(bytes)
       bytes.unpack('E').first
+    end
+
+    def self.fixed64_decode(bytes)
+      bytes.unpack('Q').first
     end
   end
 

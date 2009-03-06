@@ -147,6 +147,9 @@ class WireFormatTest < Test::Unit::TestCase
 
     should_encode_wire_format_from_fields [0x09, 0xF1, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x3F],
                                           :a => 2**62 - 15
+    should_decode_wire_format_to_fields   [0x09, 0xF1, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x3F],
+                                          :a => 2**62 - 15
+
   end
 
 
