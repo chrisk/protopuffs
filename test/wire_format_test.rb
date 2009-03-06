@@ -129,6 +129,8 @@ class WireFormatTest < Test::Unit::TestCase
       @message = Protopuffs::Message::Test1.new
     end
 
+    # 64-bit doubles have enough precision to encode/decode 1.61803,
+    # unlike the 32-bit floats above
     should_encode_wire_format_from_fields [0x09, 0x6C, 0x26, 0xDF, 0x6C, 0x73, 0xE3, 0xF9, 0x3F],
                                           :a => 1.61803
     should_decode_wire_format_to_fields   [0x09, 0x6C, 0x26, 0xDF, 0x6C, 0x73, 0xE3, 0xF9, 0x3F],
