@@ -162,7 +162,8 @@ module Protopuffs
       when WireType::LENGTH_DELIMITED
         value = value_bytes
       when WireType::FIXED32
-        value = self.class.float_decode(value_bytes)
+        value = self.class.float_decode(value_bytes) if @type == "float"
+        value = self.class.fixed32_decode(value_bytes) if @type == "fixed32"
       when WireType::FIXED64
         value = self.class.double_decode(value_bytes) if @type == "double"
         value = self.class.fixed64_decode(value_bytes) if @type == "fixed64"
@@ -188,6 +189,10 @@ module Protopuffs
 
     def self.fixed64_decode(bytes)
       bytes.unpack('Q').first
+    end
+
+    def self.fixed32_decode(bytes)
+      bytes.unpack('V').first
     end
   end
 
