@@ -199,8 +199,7 @@ class WireFormatTest < Test::Unit::TestCase
   end
 
 
-  context "a message with two int32 fields tagged #1 (optional, default=10) and #2 (required)" do
-    # from http://code.google.com/apis/protocolbuffers/docs/encoding.html#simple
+  context "a message with two int32 fields tagged #1 (optional, default=150) and #2 (required)" do
     setup do
       fields = [Protopuffs::MessageField.new("optional", "int32", "a", 1, 150),
                 Protopuffs::MessageField.new("required", "int32", "b", 2)]
@@ -216,7 +215,6 @@ class WireFormatTest < Test::Unit::TestCase
 
 
   context "a message with two int32 fields tagged #1 (optional, no default) and #2 (required)" do
-    # from http://code.google.com/apis/protocolbuffers/docs/encoding.html#simple
     setup do
       fields = [Protopuffs::MessageField.new("optional", "int32", "a", 1),
                 Protopuffs::MessageField.new("required", "int32", "b", 2)]
