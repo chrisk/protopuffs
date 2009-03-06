@@ -29,6 +29,10 @@ module Protopuffs
       @modifier == "repeated"
     end
 
+    def user_defined_type?
+      wire_type == WireType::LENGTH_DELIMITED && @type != "string" && @type != "bytes"
+    end
+
     def to_wire_format_with_value(value)
       field_encoder = lambda { |val| self.class.varint_encode(key) + encode(val) }
 
@@ -160,7 +164,12 @@ module Protopuffs
           value = false if value == 0
         end
       when WireType::LENGTH_DELIMITED
-        value = value_bytes
+        if user_defined_type?
+          value = Message.const_get(@type).new
+          value.from_wire_format(StringIO.new(value_bytes))
+        else
+          value = value_bytes
+        end
       when WireType::FIXED32
         value = self.class.float_decode(value_bytes) if @type == "float"
         value = self.class.fixed32_decode(value_bytes) if @type == "fixed32"

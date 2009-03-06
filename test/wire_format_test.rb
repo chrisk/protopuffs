@@ -194,6 +194,8 @@ class WireFormatTest < Test::Unit::TestCase
 
     should_encode_wire_format_from_fields [0x1A, 0x03, 0x08, 0x96, 0x01],
                                           :c => lambda { msg = Protopuffs::Message::Test1.new; msg.a = 150; msg }
+    should_decode_wire_format_to_fields   [0x1A, 0x03, 0x08, 0x96, 0x01],
+                                          :c => lambda { msg = Protopuffs::Message::Test1.new; msg.a = 150; msg }
   end
 
 end
