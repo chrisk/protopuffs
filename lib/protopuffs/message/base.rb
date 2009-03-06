@@ -13,7 +13,7 @@ module Protopuffs
           klass = Message.const_set(name, Class.new(self))
           klass.instance_variable_set(:@fields, fields)
           fields.each do |field|
-            klass.send(:attr_accessor, field.identifier.downcase)
+            klass.send(:attr_accessor, field.identifier)
           end
           klass
         end
@@ -45,7 +45,7 @@ module Protopuffs
 
       def to_wire_format
         self.class.fields.each do |field|
-          value = send(field.identifier.downcase)
+          value = send(field.identifier)
           @buffer.write field.to_wire_format_with_value(value)
         end
         @buffer.string
@@ -59,12 +59,12 @@ module Protopuffs
           next if field.nil?
 
           value = field.decode(value_bytes)
-          if field.repeated? && send(field.identifier.downcase).nil?
-            send("#{field.identifier.downcase}=", [value])
+          if field.repeated? && send(field.identifier).nil?
+            send("#{field.identifier}=", [value])
           elsif field.repeated?
-            send(field.identifier.downcase) << value
+            send(field.identifier) << value
           else
-            send("#{field.identifier.downcase}=", value)
+            send("#{field.identifier}=", value)
           end
         end
       end
