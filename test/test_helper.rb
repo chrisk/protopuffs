@@ -42,7 +42,16 @@ class Test::Unit::TestCase
         hash[field.identifier.to_sym] = @message.send(field.identifier)
         hash
       }
-      assert_equal expected_fields, actual_fields
+
+      actual_fields.each_pair do |key, actual_value|
+        if actual_value.is_a?(Float)
+          assert_in_delta(expected_fields[key], actual_value, Float::EPSILON)
+        else
+          assert_equal expected_fields[key], actual_value
+        end
+      end
+
+      assert_equal expected_fields.size, actual_fields.size
     end
   end
 

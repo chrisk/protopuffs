@@ -113,13 +113,12 @@ class WireFormatTest < Test::Unit::TestCase
       @message = Protopuffs::Message::Test1.new
     end
 
+    # 1.61803 gives you repeating binary digits when encoded, so the number
+    # you get from decoding is different (within Float::EPSILON)
     should_encode_wire_format_from_fields [0x0D, 0x9B, 0x1B, 0xCF, 0x3F],
                                           :a => 1.61803
-    # TODO: how to resolve finite-precision float accuracy problem? Neither
-    # the Google python implementation nor ruby_protobuf handles it, so maybe
-    # this test should just check that the value is within the machine epsilon
     should_decode_wire_format_to_fields   [0x0D, 0x9B, 0x1B, 0xCF, 0x3F],
-                                          :a => 1.61802995204926
+                                          :a => 1.6180299520492554
   end
 
 
