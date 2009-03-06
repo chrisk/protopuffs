@@ -46,7 +46,7 @@ module Protopuffs
       def to_wire_format
         self.class.fields.each do |field|
           value = send(field.identifier)
-          @buffer.write field.to_wire_format_with_value(value)
+          @buffer.write field.to_wire_format_with_value(value) unless value.nil?
         end
         @buffer.string
       end
@@ -66,6 +66,13 @@ module Protopuffs
           else
             send("#{field.identifier}=", value)
           end
+        end
+        set_values_for_missing_optional_fields
+      end
+
+      def set_values_for_missing_optional_fields
+        self.class.fields.select { |field| field.optional? }.each do |field|
+          send("#{field.identifier}=", field.default) if send(field.identifier).nil?
         end
       end
 

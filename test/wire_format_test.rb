@@ -198,4 +198,36 @@ class WireFormatTest < Test::Unit::TestCase
                                           :c => lambda { msg = Protopuffs::Message::Test1.new; msg.a = 150; msg }
   end
 
+
+  context "a message with two int32 fields tagged #1 (optional, default=10) and #2 (required)" do
+    # from http://code.google.com/apis/protocolbuffers/docs/encoding.html#simple
+    setup do
+      fields = [Protopuffs::MessageField.new("optional", "int32", "a", 1, 150),
+                Protopuffs::MessageField.new("required", "int32", "b", 2)]
+      Protopuffs::Message::Base.define_message_class("Test1", fields)
+      @message = Protopuffs::Message::Test1.new
+    end
+
+    should_encode_wire_format_from_fields [0x10, 0xBC, 0xCD, 0x09],
+                                          :b => 157_372
+    should_decode_wire_format_to_fields   [0x10, 0xBC, 0xCD, 0x09],
+                                          :a => 150, :b => 157_372
+  end
+
+
+  context "a message with two int32 fields tagged #1 (optional, no default) and #2 (required)" do
+    # from http://code.google.com/apis/protocolbuffers/docs/encoding.html#simple
+    setup do
+      fields = [Protopuffs::MessageField.new("optional", "int32", "a", 1),
+                Protopuffs::MessageField.new("required", "int32", "b", 2)]
+      Protopuffs::Message::Base.define_message_class("Test1", fields)
+      @message = Protopuffs::Message::Test1.new
+    end
+
+    should_encode_wire_format_from_fields [0x10, 0xBC, 0xCD, 0x09],
+                                          :b => 157_372
+    should_decode_wire_format_to_fields   [0x10, 0xBC, 0xCD, 0x09],
+                                          :a => 0, :b => 157_372
+  end
+
 end

@@ -9,6 +9,18 @@ module Protopuffs
       @identifier = identifier
       @tag = tag
       @default = default
+
+      set_default_for_type if optional? && @default.nil?
+    end
+
+    def set_default_for_type
+      if numeric?
+        @default = 0
+      elsif @type == "string"
+        @default = ""
+      elsif @type == "bool"
+        @default = false
+      end
     end
 
     def wire_type
@@ -27,6 +39,15 @@ module Protopuffs
 
     def repeated?
       @modifier == "repeated"
+    end
+
+    def optional?
+      @modifier == "optional"
+    end
+
+    def numeric?
+      %w(double float int32 int64 uint32 unit64 sint32 sint64 fixed32 fixed64
+         sfixed32 sfixed64).include?(@type)
     end
 
     def user_defined_type?
