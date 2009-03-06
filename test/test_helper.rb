@@ -43,11 +43,12 @@ class Test::Unit::TestCase
         hash
       }
 
-      actual_fields.each_pair do |key, actual_value|
-        if actual_value.is_a?(Float)
-          assert_in_delta(expected_fields[key], actual_value, Float::EPSILON)
+      expected_fields.each_pair do |key, expected_value|
+        expected_value = expected_value.call if expected_value.respond_to?(:call)
+        if expected_value.is_a?(Float)
+          assert_in_delta(expected_value, actual_fields[key], Float::EPSILON)
         else
-          assert_equal expected_fields[key], actual_value
+          assert_equal expected_value, actual_fields[key]
         end
       end
 
