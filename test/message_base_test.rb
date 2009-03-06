@@ -66,4 +66,33 @@ class MessageBaseTest < Test::Unit::TestCase
     end
   end
 
+
+  context "comparing messages with #==" do
+    should "return false when the messages have different types" do
+      Protopuffs::Message::Base.define_message_class("Dog", [])
+      Protopuffs::Message::Base.define_message_class("Cat", [])
+      assert_not_equal Protopuffs::Message::Dog.new, Protopuffs::Message::Cat.new
+    end
+
+    should "return false when the messages' fields have different values" do
+      fields = [Protopuffs::MessageField.new("optional", "string", "name", 1)]
+      Protopuffs::Message::Base.define_message_class("Person", fields)
+      alice = Protopuffs::Message::Person.new
+      alice.name = "Alice"
+      bob = Protopuffs::Message::Person.new
+      bob.name = "Bob"
+      assert_not_equal alice, bob
+    end
+
+    should "return true when messages of the same type have the same field values" do
+      fields = [Protopuffs::MessageField.new("optional", "string", "name", 1)]
+      Protopuffs::Message::Base.define_message_class("Sheep", fields)
+      sheep = Protopuffs::Message::Sheep.new
+      sheep.name = "Dolly"
+      sheep2 = Protopuffs::Message::Sheep.new
+      sheep2.name = "Dolly"
+      assert_equal sheep, sheep2
+    end
+  end
+
 end

@@ -69,6 +69,14 @@ module Protopuffs
         end
       end
 
+      def ==(other)
+        return false if self.class != other.class
+        self.class.fields.each do |field|
+          return false if send(field.identifier) != other.send(field.identifier)
+        end
+        true
+      end
+
     end
 
   end
