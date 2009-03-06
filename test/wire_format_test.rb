@@ -176,6 +176,8 @@ class WireFormatTest < Test::Unit::TestCase
 
     should_encode_wire_format_from_fields [0x08, 0x96, 0x01, 0x08, 0xBC, 0xCD, 0x09, 0x08, 0x3D],
                                           :a => [150, 157_372, 61]
+    should_decode_wire_format_to_fields   [0x08, 0x96, 0x01, 0x08, 0xBC, 0xCD, 0x09, 0x08, 0x3D],
+                                          :a => [150, 157_372, 61]
   end
 
 

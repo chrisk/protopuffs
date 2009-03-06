@@ -57,7 +57,15 @@ module Protopuffs
           tag, value_bytes = MessageField.shift_tag_and_value_bytes(buffer)
           field = self.class.fields.find { |field| field.tag == tag }
           next if field.nil?
-          send("#{field.identifier.downcase}=", field.decode(value_bytes))
+
+          value = field.decode(value_bytes)
+          if field.repeated? && send(field.identifier.downcase).nil?
+            send("#{field.identifier.downcase}=", [value])
+          elsif field.repeated?
+            send(field.identifier.downcase) << value
+          else
+            send("#{field.identifier.downcase}=", value)
+          end
         end
       end
 
