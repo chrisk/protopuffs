@@ -50,7 +50,7 @@ module Protopuffs
          sfixed32 sfixed64).include?(@type)
     end
 
-    def user_defined_type?
+    def embedded_message?
       wire_type == WireType::LENGTH_DELIMITED && @type != "string" && @type != "bytes"
     end
 
@@ -185,7 +185,7 @@ module Protopuffs
           value = false if value == 0
         end
       when WireType::LENGTH_DELIMITED
-        if user_defined_type?
+        if embedded_message?
           value = Message.const_get(@type).new
           value.from_wire_format(StringIO.new(value_bytes))
         else
