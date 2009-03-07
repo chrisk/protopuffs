@@ -161,10 +161,7 @@ module Protopuffs
 
     def self.shift_length_delimited(buffer)
       bytes = shift_varint(buffer)
-      value_length = 0
-      bytes.each_with_index do |byte, index|
-        value_length |= byte << (7 * index)
-      end
+      value_length = self.varint_decode(bytes)
       buffer.read(value_length)
     end
 
