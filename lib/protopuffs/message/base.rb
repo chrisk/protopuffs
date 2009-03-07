@@ -53,8 +53,8 @@ module Protopuffs
 
       def from_wire_format(buffer)
         @buffer = buffer
-        until buffer.eof?
-          tag, value_bytes = MessageField.shift_tag_and_value_bytes(buffer)
+        until @buffer.eof?
+          tag, value_bytes = MessageField.shift_tag_and_value_bytes(@buffer)
           field = self.class.fields.find { |field| field.tag == tag }
           next if field.nil?
 
