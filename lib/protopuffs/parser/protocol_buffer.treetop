@@ -8,7 +8,6 @@ module Protopuffs
         end
 
         def build
-          # placeholder until there's a Proto class
           messages.each { |message| message.build }
         end
       }
