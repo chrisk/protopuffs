@@ -15,6 +15,8 @@ module Protopuffs
         parse_tree = @parser.parse(input)
         parse_tree.build
         parse_tree
+      rescue
+        raise ParseError
       end
     end
 

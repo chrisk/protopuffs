@@ -190,6 +190,17 @@ class ParseTreeTest < Test::Unit::TestCase
       end
     end
 
+
+    should "raise a ParseError when parsing a message with a syntax error" do
+      assert_raises Protopuffs::ParseError do
+        @parser.parse(<<-proto)
+          message Person {
+            required name = 1
+          }
+        proto
+      end
+    end
+
   end
 
 end
