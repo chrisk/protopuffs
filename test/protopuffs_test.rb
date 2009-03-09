@@ -20,4 +20,17 @@ class ProtopuffsTest < Test::Unit::TestCase
     Protopuffs::ParseError
   end
 
+
+  context ".load_message_classes when a descriptor is in the load path with a Person message" do
+    setup { Protopuffs.proto_load_path = ["#{File.dirname(__FILE__)}/fixtures/proto"] }
+
+    should "create a Person message class with correct accessors" do
+      Protopuffs.load_message_classes
+      p = Protopuffs::Message::Person.new
+      p.name = "Chris"
+      p.id = 42
+      p.email = "chris@kampers.net"
+      assert_equal ["Chris", 42, "chris@kampers.net"], [p.name, p.id, p.email]
+    end
+  end
 end
