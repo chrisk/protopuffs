@@ -10,4 +10,8 @@ module Protopuffs
   def self.proto_load_path
     @proto_load_path ||= []
   end
+
+  def self.proto_load_path=(paths)
+    @proto_load_path = paths
+  end
 end
