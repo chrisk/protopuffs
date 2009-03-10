@@ -1,3 +1,5 @@
+require "rubygems"
+require "treetop"
 require "protopuffs/message/base"
 require "protopuffs/message/field"
 require "protopuffs/message/wire_type"
