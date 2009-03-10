@@ -7,7 +7,7 @@ module Protopuffs
 
     class ProtocolBufferDescriptor
       def initialize
-        Treetop.load "lib/protopuffs/parser/protocol_buffer"
+        Treetop.load File.join(File.dirname(__FILE__), "protocol_buffer")
         @parser = Protopuffs::ProtocolBufferParser.new
       end
 
