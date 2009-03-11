@@ -60,6 +60,16 @@ class MessageBaseTest < Test::Unit::TestCase
   end
 
 
+  context ".define_message_class with a message name that's Camel_Scored" do
+    # violates the Google style guide, but the other implementations handle this
+    should "strip the underscore when creating the class" do
+      Protopuffs::Message::Base.define_message_class("User_Image", [])
+      assert !Protopuffs::Message.const_defined?("User_Image")
+      assert Protopuffs::Message.const_defined?("UserImage")
+    end
+  end
+
+
   should "not allow you to instantiate Message::Base directly" do
     assert_raises RuntimeError do
       Protopuffs::Message::Base.new

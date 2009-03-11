@@ -7,7 +7,7 @@ module Protopuffs
         attr_reader :fields
 
         def define_message_class(name, fields)
-          name = name.capitalize
+          name = name.delete("_")
           self.check_fields_for_errors(name, fields)
           Message.send(:remove_const, name) if Message.const_defined?(name)
           klass = Message.const_set(name, Class.new(self))
