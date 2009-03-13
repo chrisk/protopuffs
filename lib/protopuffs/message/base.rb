@@ -75,6 +75,7 @@ module Protopuffs
           end
         end
         set_values_for_missing_optional_fields
+        self
       end
 
       def set_values_for_missing_optional_fields
