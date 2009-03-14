@@ -124,4 +124,43 @@ class MessageBaseTest < Test::Unit::TestCase
     end
   end
 
+
+  context "mass-assignment of field values via #attributes=" do
+    setup do
+      fields = [Protopuffs::MessageField.new("required", "string", "title", 1),
+                Protopuffs::MessageField.new("required", "string", "author", 2),
+                Protopuffs::MessageField.new("optional", "int32", "edition", 3)]
+      Protopuffs::Message::Base.define_message_class("Book", fields)
+    end
+
+    should "set each field value to the corresponding entry in the argument hash" do
+      message = Protopuffs::Message::Book.new
+      message.attributes = {:title   => "You Shall Know Our Velocity",
+                            :author  => "Dave Eggers",
+                            :edition => 2}
+      assert_equal "You Shall Know Our Velocity", message.title
+      assert_equal "Dave Eggers", message.author
+      assert_equal 2, message.edition
+    end
+
+    should "ignore unknown fields in the argument hash" do
+      message = Protopuffs::Message::Book.new
+      message.attributes = {:title   => "You Shall Know Our Velocity",
+                            :author  => "Dave Eggers",
+                            :edition => 2,
+                            :isbn    => "0970335555"}
+      assert_equal "You Shall Know Our Velocity", message.title
+      assert_equal "Dave Eggers", message.author
+      assert_equal 2, message.edition
+    end
+
+    should "skip fields missing from the argument hash, setting defaults for optional fields" do
+      message = Protopuffs::Message::Book.new
+      message.attributes = {:author => "Dave Eggers"}
+      assert_equal "Dave Eggers", message.author
+      assert_nil message.title
+      assert_equal 0, message.edition
+    end
+  end
+
 end

@@ -89,6 +89,13 @@ module Protopuffs
         end
       end
 
+      def attributes=(attrs = {})
+        attrs.each_pair do |name, value|
+          self.send("#{name}=", value) if respond_to?("#{name}=")
+        end
+        set_values_for_missing_optional_fields
+      end
+
       def ==(other)
         return false if self.class != other.class
         self.class.fields.each do |field|
