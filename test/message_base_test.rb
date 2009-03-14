@@ -122,6 +122,11 @@ class MessageBaseTest < Test::Unit::TestCase
       message = Protopuffs::Message::Book.new
       assert_nil message.title
     end
+
+    should "optionally accept a hash of field values and mass-assign them" do
+      message = Protopuffs::Message::Book.new(:title => "testing")
+      assert_equal "testing", message.title
+    end
   end
 
 

@@ -36,15 +36,18 @@ module Protopuffs
 
       attr_reader :buffer
 
-      def initialize(buffer = nil)
+      def initialize(field_values = nil)
         if self.class == Base
           raise "#{self.class} should not be instantiated directly. Use the factory #{self.class}.define_message_class instead."
         end
 
-        if buffer.nil?
+        if field_values.nil?
           @buffer = StringIO.new
-        else
-          from_wire_format(buffer)
+        elsif field_values.respond_to?(:each_pair)
+          @buffer = StringIO.new
+          self.attributes = field_values
+        elsif field_values.respond_to?(:read)
+          from_wire_format(field_values)
         end
       end
 
