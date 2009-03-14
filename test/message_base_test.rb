@@ -105,4 +105,23 @@ class MessageBaseTest < Test::Unit::TestCase
     end
   end
 
+
+  context "instantiating a message class" do
+    setup do
+      fields = [Protopuffs::MessageField.new("required", "string", "title", 2)]
+      Protopuffs::Message::Base.define_message_class("Book", fields)
+    end
+
+    should "optionally accept a wire-format encoded buffer and populate the fields" do
+      input = StringIO.new([0x12, 0x07, 0x74, 0x65, 0x73, 0x74, 0x69, 0x6E, 0x67].pack("C*"))
+      message = Protopuffs::Message::Book.new(input)
+      assert_equal "testing", message.title
+    end
+
+    should "not populate the fields if no argument is present" do
+      message = Protopuffs::Message::Book.new
+      assert_nil message.title
+    end
+  end
+
 end
