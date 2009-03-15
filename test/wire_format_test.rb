@@ -20,6 +20,12 @@ class WireFormatTest < Test::Unit::TestCase
       wire_message = StringIO.new([0x08, 0x96, 0x01].pack('C*'))
       assert_same @message, @message.from_wire_format(wire_message)
     end
+
+    should "accept a string as an argument to #from_wire_format" do
+      wire_message = [0x08, 0x96, 0x01].pack('C*')
+      @message.from_wire_format(wire_message)
+      assert_equal 150, @message.a
+    end
   end
 
 

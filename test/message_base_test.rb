@@ -112,8 +112,14 @@ class MessageBaseTest < Test::Unit::TestCase
       Protopuffs::Message::Base.define_message_class("Book", fields)
     end
 
-    should "optionally accept a wire-format encoded buffer and populate the fields" do
+    should "optionally accept a wire-format encoded IO-style object and populate the fields" do
       input = StringIO.new([0x12, 0x07, 0x74, 0x65, 0x73, 0x74, 0x69, 0x6E, 0x67].pack("C*"))
+      message = Protopuffs::Message::Book.new(input)
+      assert_equal "testing", message.title
+    end
+
+    should "optionally accept a wire-format encoded string and populate the fields" do
+      input = [0x12, 0x07, 0x74, 0x65, 0x73, 0x74, 0x69, 0x6E, 0x67].pack("C*")
       message = Protopuffs::Message::Book.new(input)
       assert_equal "testing", message.title
     end

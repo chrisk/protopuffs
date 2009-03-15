@@ -46,7 +46,7 @@ module Protopuffs
         elsif field_values.respond_to?(:each_pair)
           @buffer = StringIO.new
           self.attributes = field_values
-        elsif field_values.respond_to?(:read)
+        else
           from_wire_format(field_values)
         end
       end
@@ -67,7 +67,12 @@ module Protopuffs
       end
 
       def from_wire_format(buffer)
-        @buffer = buffer
+        if !buffer.respond_to?(:read)
+          @buffer = StringIO.new(buffer)
+        else
+          @buffer = buffer
+        end
+
         until @buffer.eof?
           tag, value_bytes = MessageField.shift_tag_and_value_bytes(@buffer)
           field = self.class.fields.find { |field| field.tag == tag }
