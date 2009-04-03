@@ -153,7 +153,8 @@ module Protopuffs
     def self.shift_varint(buffer)
       bytes = []
       begin
-        byte = buffer.readchar
+        # Use #readbyte in Ruby 1.9, and #readchar in Ruby 1.8
+        byte = buffer.send(buffer.respond_to?(:readbyte) ? :readbyte : :readchar)
         bytes << (byte & 0b01111111)
       end while byte >> 7 == 1
       bytes
