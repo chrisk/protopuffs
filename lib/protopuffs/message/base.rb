@@ -63,7 +63,7 @@ module Protopuffs
       def inspect
         type = self.class.name.split("::").last.downcase
         field_strings = self.class.fields.map { |f| "  #{f.identifier}: #{send(f.identifier).inspect}\n" }
-        "#{type} {\n#{field_strings}}"
+        "#{type} {\n#{field_strings.join}}"
       end
 
       def from_wire_format(buffer)
