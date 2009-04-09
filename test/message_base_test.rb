@@ -67,6 +67,20 @@ class MessageBaseTest < Test::Unit::TestCase
       assert !Protopuffs::Message.const_defined?("User_Image")
       assert Protopuffs::Message.const_defined?("UserImage")
     end
+
+    context "and an embedded-message field that's Camel_Scored" do
+      should "strip the underscore when instantiating the class of the field" do
+        child_fields = [Protopuffs::MessageField.new("optional", "string", "street", 1)]
+        Protopuffs::Message::Base.define_message_class("User_Address", child_fields)
+        parent_fields = [Protopuffs::MessageField.new("required", "User_Address", "user_address", 1)]
+        Protopuffs::Message::Base.define_message_class("User_Info", parent_fields)
+
+        child = Protopuffs::Message::UserAddress.new(:street => "400 2nd Street")
+        parent = Protopuffs::Message::UserInfo.new(child.to_wire_format)
+
+        assert_equal Protopuffs::Message::UserAddress, parent.user_address.class
+      end
+    end
   end
 
 

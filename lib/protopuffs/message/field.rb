@@ -184,7 +184,7 @@ module Protopuffs
         end
       when WireType::LENGTH_DELIMITED
         if embedded_message?
-          value = Message.const_get(@type).new
+          value = Message.const_get(@type.delete("_")).new
           value.from_wire_format(StringIO.new(value_bytes))
         else
           value = value_bytes
