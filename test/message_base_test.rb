@@ -179,12 +179,21 @@ class MessageBaseTest < Test::Unit::TestCase
       assert_equal 2, message.edition
     end
 
-    should "skip fields missing from the argument hash, setting defaults for optional fields" do
+    should "only assign fields present in the argument hash" do
+      message = Protopuffs::Message::Book.new
+      message.title = "You Shall Know Our Velocity"
+      message.attributes = {:author => "Dave Eggers"}
+      assert_equal "Dave Eggers", message.author
+      assert_equal "You Shall Know Our Velocity", message.title
+      assert_nil message.edition
+    end
+
+    should "not assign defaults for optional fields missing from the argument hash" do
       message = Protopuffs::Message::Book.new
       message.attributes = {:author => "Dave Eggers"}
       assert_equal "Dave Eggers", message.author
       assert_nil message.title
-      assert_equal 0, message.edition
+      assert_nil message.edition
     end
   end
 

@@ -101,7 +101,6 @@ module Protopuffs
         attrs.each_pair do |name, value|
           self.send("#{name}=", value) if respond_to?("#{name}=")
         end
-        set_values_for_missing_optional_fields
       end
 
       def ==(other)
