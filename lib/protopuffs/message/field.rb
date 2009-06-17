@@ -74,6 +74,7 @@ module Protopuffs
           embedded_bytes = value.to_wire_format
           value_bytes = self.class.varint_encode(embedded_bytes.size) + embedded_bytes
         else
+          value = value.to_s if @type == 'string'
           value_bytes = self.class.varint_encode(value.size)
           value_bytes += self.class.string_encode(value) if @type == "string"
           value_bytes += value if @type == "bytes"
@@ -106,7 +107,7 @@ module Protopuffs
     end
 
     def self.string_encode(value)
-      value.to_s.unpack('U*').pack('C*')
+      value.unpack('U*').pack('C*')
     end
 
     def self.float_encode(value)

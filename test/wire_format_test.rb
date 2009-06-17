@@ -246,7 +246,7 @@ class WireFormatTest < Test::Unit::TestCase
       @message = Protopuffs::Message::Test1.new
     end
 
-    should_encode_wire_format_from_fields [0x0A, 0x04, 0x32],
+    should_encode_wire_format_from_fields [0x0A, 0x01, 0x32],
                                           :a => 2
   end
 
