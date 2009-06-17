@@ -106,7 +106,7 @@ module Protopuffs
     end
 
     def self.string_encode(value)
-      value.unpack('U*').pack('C*')
+      value.to_s.unpack('U*').pack('C*')
     end
 
     def self.float_encode(value)

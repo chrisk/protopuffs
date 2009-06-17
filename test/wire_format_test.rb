@@ -239,4 +239,15 @@ class WireFormatTest < Test::Unit::TestCase
                                           :a => 0, :b => 157_372
   end
 
+  context "string fields should convert their values to strings" do
+    setup do
+      fields = [Protopuffs::MessageField.new("required", "string", "a", 1)]
+      Protopuffs::Message::Base.define_message_class("Test1", fields)
+      @message = Protopuffs::Message::Test1.new
+    end
+
+    should_encode_wire_format_from_fields [0x0A, 0x04, 0x32],
+                                          :a => 2
+  end
+
 end
