@@ -9,7 +9,7 @@ class MessageFieldTest < Test::Unit::TestCase
     end
 
     should "set a numeric's default to 0 when a default isn't specified" do
-      numeric_types = %w(double float int32 int64 uint32 unit64 sint32 sint64
+      numeric_types = %w(double float int32 int64 uint32 uint64 sint32 sint64
                          fixed32 fixed64 sfixed32 sfixed64)
       numeric_types.each do |type|
         assert_equal 0, Protopuffs::MessageField.new("optional", type, "number", 1).default
