@@ -5,7 +5,7 @@ class WireFormatTest < Test::Unit::TestCase
   context "a message with one int32 field tagged #1" do
     # from http://code.google.com/apis/protocolbuffers/docs/encoding.html#simple
     setup do
-      fields = [Protopuffs::MessageField.new("required", "int32", "a", 1)]
+      fields = [Protopuffs::Int32.new("required", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
     end
@@ -31,8 +31,8 @@ class WireFormatTest < Test::Unit::TestCase
 
   context "a message with two int32 fields tagged #1 and #2" do
     setup do
-      fields = [Protopuffs::MessageField.new("required", "int32", "a", 1),
-                Protopuffs::MessageField.new("required", "int32", "b", 2)]
+      fields = [Protopuffs::Int32.new("required", "a", 1),
+                Protopuffs::Int32.new("required", "b", 2)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
     end
@@ -46,7 +46,7 @@ class WireFormatTest < Test::Unit::TestCase
 
   context "a message with one int64 field tagged #1" do
     setup do
-      fields = [Protopuffs::MessageField.new("required", "int64", "a", 1)]
+      fields = [Protopuffs::Int64.new("required", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
     end
@@ -60,8 +60,8 @@ class WireFormatTest < Test::Unit::TestCase
 
   context "a message with one uint32 field tagged #1 and one uint64 field tagged #2" do
     setup do
-      fields = [Protopuffs::MessageField.new("required", "uint32", "a", 1),
-                Protopuffs::MessageField.new("required", "uint64", "b", 2)]
+      fields = [Protopuffs::UInt32.new("required", "a", 1),
+                Protopuffs::UInt64.new("required", "b", 2)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
     end
@@ -75,8 +75,8 @@ class WireFormatTest < Test::Unit::TestCase
 
   context "a message with two bool fields tagged #1 and #2" do
     setup do
-      fields = [Protopuffs::MessageField.new("required", "bool", "a", 1),
-                Protopuffs::MessageField.new("required", "bool", "b", 2)]
+      fields = [Protopuffs::Bool.new("required", "a", 1),
+                Protopuffs::Bool.new("required", "b", 2)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
     end
@@ -91,7 +91,7 @@ class WireFormatTest < Test::Unit::TestCase
   context "a message with one string field tagged #2" do
     setup do
       # from http://code.google.com/apis/protocolbuffers/docs/encoding.html#types
-      fields = [Protopuffs::MessageField.new("required", "string", "b", 2)]
+      fields = [Protopuffs::String.new("required", "b", 2)]
       Protopuffs::Message::Base.define_message_class("Test2", fields)
       @message = Protopuffs::Message::Test2.new
     end
@@ -105,7 +105,7 @@ class WireFormatTest < Test::Unit::TestCase
 
   context "a message with a bytes field tagged #1" do
     setup do
-      fields = [Protopuffs::MessageField.new("required", "bytes", "a", 1)]
+      fields = [Protopuffs::Bytes.new("required", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
     end
@@ -119,7 +119,7 @@ class WireFormatTest < Test::Unit::TestCase
 
   context "a message with one float field tagged #1" do
     setup do
-      fields = [Protopuffs::MessageField.new("required", "float", "a", 1)]
+      fields = [Protopuffs::Float.new("required", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
     end
@@ -135,7 +135,7 @@ class WireFormatTest < Test::Unit::TestCase
 
   context "a message with one double field tagged #1" do
     setup do
-      fields = [Protopuffs::MessageField.new("required", "double", "a", 1)]
+      fields = [Protopuffs::Double.new("required", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
     end
@@ -151,7 +151,7 @@ class WireFormatTest < Test::Unit::TestCase
 
   context "a message with one fixed64 field tagged #1" do
     setup do
-      fields = [Protopuffs::MessageField.new("required", "fixed64", "a", 1)]
+      fields = [Protopuffs::Fixed64.new("required", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
     end
@@ -166,7 +166,7 @@ class WireFormatTest < Test::Unit::TestCase
 
   context "a message with one fixed32 field tagged #1" do
     setup do
-      fields = [Protopuffs::MessageField.new("required", "fixed32", "a", 1)]
+      fields = [Protopuffs::Fixed32.new("required", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
     end
@@ -180,7 +180,7 @@ class WireFormatTest < Test::Unit::TestCase
 
   context "a message with one repeating int32 field tagged #1" do
     setup do
-      fields = [Protopuffs::MessageField.new("repeated", "int32", "a", 1)]
+      fields = [Protopuffs::Int32.new("repeated", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
     end
@@ -195,10 +195,10 @@ class WireFormatTest < Test::Unit::TestCase
   context "a message with one embedded-message field Test1 tagged #3 (where Test1 has an int32 field tagged #1)" do
     # from http://code.google.com/apis/protocolbuffers/docs/encoding.html#embedded
     setup do
-      test1_fields = [Protopuffs::MessageField.new("required", "int32", "a", 1)]
+      test1_fields = [Protopuffs::Int32.new("required", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", test1_fields)
 
-      test3_fields = [Protopuffs::MessageField.new("required", "Test1", "c", 3)]
+      test3_fields = [Protopuffs::Embedded.new("Test1", "required", "c", 3)]
       Protopuffs::Message::Base.define_message_class("Test3", test3_fields)
       @message = Protopuffs::Message::Test3.new
     end
@@ -212,8 +212,8 @@ class WireFormatTest < Test::Unit::TestCase
 
   context "a message with two int32 fields tagged #1 (optional, default=150) and #2 (required)" do
     setup do
-      fields = [Protopuffs::MessageField.new("optional", "int32", "a", 1, 150),
-                Protopuffs::MessageField.new("required", "int32", "b", 2)]
+      fields = [Protopuffs::Int32.new("optional", "a", 1, 150),
+                Protopuffs::Int32.new("required", "b", 2)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
     end
@@ -227,8 +227,8 @@ class WireFormatTest < Test::Unit::TestCase
 
   context "a message with two int32 fields tagged #1 (optional, no default) and #2 (required)" do
     setup do
-      fields = [Protopuffs::MessageField.new("optional", "int32", "a", 1),
-                Protopuffs::MessageField.new("required", "int32", "b", 2)]
+      fields = [Protopuffs::Int32.new("optional", "a", 1),
+                Protopuffs::Int32.new("required", "b", 2)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
     end
@@ -241,7 +241,7 @@ class WireFormatTest < Test::Unit::TestCase
 
   context "string fields should convert their values to strings" do
     setup do
-      fields = [Protopuffs::MessageField.new("required", "string", "a", 1)]
+      fields = [Protopuffs::String.new("required", "a", 1)]
       Protopuffs::Message::Base.define_message_class("Test1", fields)
       @message = Protopuffs::Message::Test1.new
     end

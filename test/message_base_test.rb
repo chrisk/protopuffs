@@ -4,15 +4,15 @@ class MessageBaseTest < Test::Unit::TestCase
 
   context ".define_message_class using 'Person' and two fields" do
     should "create a Message::Person class" do
-      fields = [Protopuffs::MessageField.new("optional", "string", "name", 1),
-                Protopuffs::MessageField.new("optional", "string", "address", 2)]
+      fields = [Protopuffs::String.new("optional", "name", 1),
+                Protopuffs::String.new("optional", "address", 2)]
       Protopuffs::Message::Base.define_message_class("Person", fields)
       Protopuffs::Message::Person
     end
 
     should "create a class with accessors for each field" do
-      fields = [Protopuffs::MessageField.new("optional", "string", "name", 1),
-                Protopuffs::MessageField.new("optional", "string", "address", 2)]
+      fields = [Protopuffs::String.new("optional", "name", 1),
+                Protopuffs::String.new("optional", "address", 2)]
       Protopuffs::Message::Base.define_message_class("Person", fields)
       person = Protopuffs::Message::Person.new
       person.name = "Chris"
@@ -25,8 +25,8 @@ class MessageBaseTest < Test::Unit::TestCase
 
   context ".define_message_class with fields that have duplicate tags" do
     should "raise a Protopuffs::ParseError" do
-      fields = [Protopuffs::MessageField.new("optional", "int32", "name", 1),
-                Protopuffs::MessageField.new("optional", "string", "address", 1)]
+      fields = [Protopuffs::Int32.new("optional", "name", 1),
+                Protopuffs::String.new("optional", "address", 1)]
       assert_raises Protopuffs::ParseError do
         Protopuffs::Message::Base.define_message_class("Person", fields)
       end
@@ -36,23 +36,23 @@ class MessageBaseTest < Test::Unit::TestCase
 
   context ".define_message_class with fields that have invalid tags" do
     should "raise a Protopuffs::ParseError when a tag is too large" do
-      fields = [Protopuffs::MessageField.new("optional", "int32", "name", 1),
-                Protopuffs::MessageField.new("optional", "string", "address", 536_870_912)]
+      fields = [Protopuffs::Int32.new("optional", "name", 1),
+                Protopuffs::String.new("optional", "address", 536_870_912)]
       assert_raises Protopuffs::ParseError do
         Protopuffs::Message::Base.define_message_class("Person", fields)
       end
     end
 
     should "raise a Protopuffs::ParseError when a tag is too small" do
-      fields = [Protopuffs::MessageField.new("optional", "int32", "name", 0),
-                Protopuffs::MessageField.new("optional", "string", "address", 1)]
+      fields = [Protopuffs::Int32.new("optional", "name", 0),
+                Protopuffs::String.new("optional", "address", 1)]
       assert_raises Protopuffs::ParseError do
         Protopuffs::Message::Base.define_message_class("Person", fields)
       end
     end
 
     should "raise a Protopuffs::ParseError when a tag is reserved" do
-      fields = [Protopuffs::MessageField.new("optional", "string", "name", 19050)]
+      fields = [Protopuffs::String.new("optional", "name", 19050)]
       assert_raises Protopuffs::ParseError do
         Protopuffs::Message::Base.define_message_class("Person", fields)
       end
@@ -70,9 +70,9 @@ class MessageBaseTest < Test::Unit::TestCase
 
     context "and an embedded-message field that's Camel_Scored" do
       should "strip the underscore when instantiating the class of the field" do
-        child_fields = [Protopuffs::MessageField.new("optional", "string", "street", 1)]
+        child_fields = [Protopuffs::String.new("optional", "street", 1)]
         Protopuffs::Message::Base.define_message_class("User_Address", child_fields)
-        parent_fields = [Protopuffs::MessageField.new("required", "User_Address", "user_address", 1)]
+        parent_fields = [Protopuffs::Embedded.new("User_Address", "required", "user_address", 1)]
         Protopuffs::Message::Base.define_message_class("User_Info", parent_fields)
 
         child = Protopuffs::Message::UserAddress.new(:street => "400 2nd Street")
@@ -99,7 +99,7 @@ class MessageBaseTest < Test::Unit::TestCase
     end
 
     should "return false when the messages' fields have different values" do
-      fields = [Protopuffs::MessageField.new("optional", "string", "name", 1)]
+      fields = [Protopuffs::String.new("optional", "name", 1)]
       Protopuffs::Message::Base.define_message_class("Person", fields)
       alice = Protopuffs::Message::Person.new
       alice.name = "Alice"
@@ -109,7 +109,7 @@ class MessageBaseTest < Test::Unit::TestCase
     end
 
     should "return true when messages of the same type have the same field values" do
-      fields = [Protopuffs::MessageField.new("optional", "string", "name", 1)]
+      fields = [Protopuffs::String.new("optional", "name", 1)]
       Protopuffs::Message::Base.define_message_class("Sheep", fields)
       sheep = Protopuffs::Message::Sheep.new
       sheep.name = "Dolly"
@@ -122,7 +122,7 @@ class MessageBaseTest < Test::Unit::TestCase
 
   context "instantiating a message class" do
     setup do
-      fields = [Protopuffs::MessageField.new("required", "string", "title", 2)]
+      fields = [Protopuffs::String.new("required", "title", 2)]
       Protopuffs::Message::Base.define_message_class("Book", fields)
     end
 
@@ -152,9 +152,9 @@ class MessageBaseTest < Test::Unit::TestCase
 
   context "mass-assignment of field values via #attributes=" do
     setup do
-      fields = [Protopuffs::MessageField.new("required", "string", "title", 1),
-                Protopuffs::MessageField.new("required", "string", "author", 2),
-                Protopuffs::MessageField.new("optional", "int32", "edition", 3)]
+      fields = [Protopuffs::String.new("required", "title", 1),
+                Protopuffs::String.new("required", "author", 2),
+                Protopuffs::Int32.new("optional", "edition", 3)]
       Protopuffs::Message::Base.define_message_class("Book", fields)
     end
 

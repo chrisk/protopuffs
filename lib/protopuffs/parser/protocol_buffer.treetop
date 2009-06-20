@@ -60,8 +60,8 @@ module Protopuffs
         end
 
         def build
-          MessageField.new(modifier.text_value, type.text_value, identifier.text_value,
-                           integer.text_value.to_i, default)
+          MessageField.factory(type.text_value, modifier.text_value, identifier.text_value,
+                               integer.text_value.to_i, default)
         end
       }
     end

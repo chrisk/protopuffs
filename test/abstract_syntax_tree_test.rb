@@ -12,13 +12,13 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
         @descriptor = "message Person {}"
       end
 
-      should "create one MessageDescriptor" do
+      should "create one message class" do
         Protopuffs::Message::Base.expects(:define_message_class).once.with("Person", [])
         @parser.parse(@descriptor)
       end
 
       should "not create any MessageFields" do
-        Protopuffs::MessageField.expects(:new).never
+        Protopuffs::MessageField.expects(:factory).never
         @parser.parse(@descriptor)
       end
     end
@@ -32,14 +32,14 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
         proto
       end
 
-      should "create two MessageDescriptors" do
+      should "create two message classes" do
         Protopuffs::Message::Base.expects(:define_message_class).once.with("Apple", []).in_sequence
         Protopuffs::Message::Base.expects(:define_message_class).once.with("Orange", []).in_sequence
         @parser.parse(@descriptor)
       end
 
       should "not create any MessageFields" do
-        Protopuffs::MessageField.expects(:new).never
+        Protopuffs::MessageField.expects(:factory).never
         @parser.parse(@descriptor)
       end
     end
@@ -54,13 +54,14 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
         proto
       end
 
-      should "create one 'Person' MessageDescriptor with one field" do
+      should "create one 'Person' message class with one field" do
         Protopuffs::Message::Base.expects(:define_message_class).once.with("Person", responds_with(:size, 1))
         @parser.parse(@descriptor)
       end
 
       should "create one MessageField with correct options" do
-        Protopuffs::MessageField.expects(:new).once.with("required", "string", "name", 1, nil).returns(stub(:tag => 1, :identifier => "name"))
+        Protopuffs::MessageField.expects(:factory).once.with("string", "required", "name", 1, nil).
+          returns(stub(:tag => 1, :identifier => "name"))
         @parser.parse(@descriptor)
       end
     end
@@ -77,15 +78,18 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
         proto
       end
 
-      should "create one 'Person' MessageDescriptor with three fields" do
+      should "create one 'Person' message class with three fields" do
         Protopuffs::Message::Base.expects(:define_message_class).once.with("Person", responds_with(:size, 3))
         @parser.parse(@descriptor)
       end
 
       should "create three MessageFields with correct options" do
-        Protopuffs::MessageField.expects(:new).once.with("required", "string", "name", 1, nil).in_sequence.returns(stub(:tag => 1, :identifier => "name"))
-        Protopuffs::MessageField.expects(:new).once.with("required", "int32", "id", 2, nil).in_sequence.returns(stub(:tag => 2, :identifier => "id"))
-        Protopuffs::MessageField.expects(:new).once.with("optional", "string", "email", 3, nil).in_sequence.returns(stub(:tag => 3, :identifier => "email"))
+        Protopuffs::MessageField.expects(:factory).once.with("string", "required", "name", 1, nil).in_sequence.
+          returns(stub(:tag => 1, :identifier => "name"))
+        Protopuffs::MessageField.expects(:factory).once.with("int32", "required", "id", 2, nil).in_sequence.
+          returns(stub(:tag => 2, :identifier => "id"))
+        Protopuffs::MessageField.expects(:factory).once.with("string", "optional", "email", 3, nil).in_sequence.
+          returns(stub(:tag => 3, :identifier => "email"))
         @parser.parse(@descriptor)
       end
     end
@@ -102,15 +106,18 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
         proto
       end
 
-      should "create one 'Person' MessageDescriptor with three fields" do
+      should "create one 'Person' message class with three fields" do
         Protopuffs::Message::Base.expects(:define_message_class).once.with("Person", responds_with(:size, 3))
         @parser.parse(@descriptor)
       end
 
       should "create three MessageFields with correct options" do
-        Protopuffs::MessageField.expects(:new).once.with("required", "string", "name", 1, nil).in_sequence.returns(stub(:tag => 1, :identifier => "name"))
-        Protopuffs::MessageField.expects(:new).once.with("optional", "string", "language", 2, "en").in_sequence.returns(stub(:tag => 2, :identifier => "language"))
-        Protopuffs::MessageField.expects(:new).once.with("optional", "int32", "account_code", 3, 0).in_sequence.returns(stub(:tag => 3, :identifier => "account_code"))
+        Protopuffs::MessageField.expects(:factory).once.with("string", "required", "name", 1, nil).in_sequence.
+          returns(stub(:tag => 1, :identifier => "name"))
+        Protopuffs::MessageField.expects(:factory).once.with("string", "optional", "language", 2, "en").in_sequence.
+          returns(stub(:tag => 2, :identifier => "language"))
+        Protopuffs::MessageField.expects(:factory).once.with("int32", "optional", "account_code", 3, 0).in_sequence.
+          returns(stub(:tag => 3, :identifier => "account_code"))
         @parser.parse(@descriptor)
       end
     end
@@ -126,14 +133,16 @@ class AbstractSyntaxTreeTest < Test::Unit::TestCase
         proto
       end
 
-      should "create one 'Person' MessageDescriptor with two fields" do
+      should "create one 'Person' message class with two fields" do
         Protopuffs::Message::Base.expects(:define_message_class).once.with("Person", responds_with(:size, 2))
         @parser.parse(@descriptor)
       end
 
       should "create two MessageFields with correct options" do
-        Protopuffs::MessageField.expects(:new).once.with("required", "string", "name", 1, nil).in_sequence.returns(stub(:tag => 1, :identifier => "name"))
-        Protopuffs::MessageField.expects(:new).once.with("repeated", "Address", "addresses", 2, nil).in_sequence.returns(stub(:tag => 2, :identifier => "addresses"))
+        Protopuffs::MessageField.expects(:factory).once.with("string", "required", "name", 1, nil).in_sequence.
+          returns(stub(:tag => 1, :identifier => "name"))
+        Protopuffs::MessageField.expects(:factory).once.with("Address", "repeated", "addresses", 2, nil).in_sequence.
+          returns(stub(:tag => 2, :identifier => "addresses"))
         @parser.parse(@descriptor)
       end
     end

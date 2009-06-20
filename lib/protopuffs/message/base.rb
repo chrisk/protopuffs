@@ -74,9 +74,10 @@ module Protopuffs
         end
 
         until @buffer.eof?
-          tag, value_bytes = MessageField.shift_tag_and_value_bytes(@buffer)
+          tag = MessageField.shift_tag(@buffer)
           field = self.class.fields.find { |field| field.tag == tag }
           next if field.nil?
+          value_bytes = field.class.shift(@buffer)
 
           value = field.decode(value_bytes)
           if field.repeated? && send(field.identifier).nil?

@@ -1,40 +1,37 @@
 module Protopuffs
 
   class MessageField
-    attr_reader :modifier, :type, :identifier, :tag, :default
+    attr_reader :identifier, :tag, :default
 
-    def initialize(modifier, type, identifier, tag, default = nil)
+    def self.factory(type, *args)
+      case type
+      when "int32"    then Int32.new(*args)
+      when "int64"    then Int64.new(*args)
+      when "uint32"   then UInt32.new(*args)
+      when "uint64"   then UInt64.new(*args)
+      when "bool"     then Bool.new(*args)
+      when "double"   then Double.new(*args)
+      when "fixed64"  then Fixed64.new(*args)
+      when "string"   then String.new(*args)
+      when "bytes"    then Bytes.new(*args)
+      when "float"    then Float.new(*args)
+      when "fixed32"  then Fixed32.new(*args)
+      else Embedded.new(type, *args)
+    end
+
+    def initialize(modifier, identifier, tag, default)
+      raise "MessageField is an abstract base class" if self.class == MessageField
+      raise ArgumentError.new("Invalid modifier '#{modifier}'") unless
+        ["optional", "required", "repeated"].include?(modifier)
       @modifier = modifier
-      @type = type
       @identifier = identifier
       @tag = tag
       @default = default
-
-      set_default_for_type if optional? && @default.nil?
     end
-
-    def set_default_for_type
-      if numeric?
-        @default = 0
-      elsif @type == "string"
-        @default = ""
-      elsif @type == "bool"
-        @default = false
-      end
-    end
-
-    def wire_type
-      case @type
-      when "int32", "int64", "uint32", "uint64", "bool" then WireType::VARINT
-      when "double", "fixed64"                          then WireType::FIXED64
-      when "string", "bytes"                            then WireType::LENGTH_DELIMITED
-      when "float", "fixed32"                           then WireType::FIXED32
-      else WireType::LENGTH_DELIMITED # embedded messages
-      end
-    end
+    private :initialize
 
     def key
-      (@tag << 3) | wire_type
+      (@tag << 3) | self.class.wire_type
     end
 
     def repeated?
@@ -45,18 +42,8 @@ module Protopuffs
       @modifier == "optional"
     end
 
-    def numeric?
-      %w(double float int32 int64 uint32 uint64 sint32 sint64 fixed32 fixed64
-         sfixed32 sfixed64).include?(@type)
-    end
-
-    def embedded_message?
-      wire_type == WireType::LENGTH_DELIMITED && @type != "string" && @type != "bytes"
-    end
-
     def to_wire_format_with_value(value)
-      field_encoder = lambda { |val| self.class.varint_encode(key) + encode(val) }
-
+      field_encoder = lambda { |val| VarInt.encode(key) + self.class.encode(val) }
       if repeated?
         value.map(&field_encoder).join
       else
@@ -64,32 +51,60 @@ module Protopuffs
       end
     end
 
-    def encode(value)
-      case wire_type
-      when WireType::VARINT
-        value = (value ? 1 : 0) if @type == "bool"
-        value_bytes = self.class.varint_encode(value)
-      when WireType::LENGTH_DELIMITED
-        if value.respond_to?(:to_wire_format)
-          embedded_bytes = value.to_wire_format
-          value_bytes = self.class.varint_encode(embedded_bytes.size) + embedded_bytes
-        else
-          value_bytes = self.class.varint_encode(value.size)
-          value_bytes += self.class.string_encode(value) if @type == "string"
-          value_bytes += value if @type == "bytes"
-        end
-      when WireType::FIXED32
-        value_bytes = self.class.float_encode(value) if @type == "float"
-        value_bytes = self.class.fixed32_encode(value) if @type == "fixed32"
-      when WireType::FIXED64
-        value_bytes = self.class.double_encode(value) if @type == "double"
-        value_bytes = self.class.fixed64_encode(value) if @type == "fixed64"
+    def self.shift_tag(buffer)
+      bits = 0
+      bytes = VarInt.shift(buffer)
+      bytes.each_with_index do |byte, index|
+        byte &= 0b01111111
+        bits |= byte << (7 * index)
       end
-      value_bytes
+      bits >> 3
     end
+  end
 
+  class Bool < MessageField
+    def initialize(modifier, identifier, tag, default = false)
+      super(modifier, identifier, tag, default)
+    end
+    def self.wire_type;     WireType::VARINT end
+    def self.shift(buffer); VarInt.shift(buffer) end
+    def decode(value_bytes)
+      value = VarInt.decode(value_bytes)
+      value = true  if value == 1
+      value = false if value == 0
+      value
+    end
+    def self.encode(value); VarInt.encode(value ? 1 : 0) end
+  end
 
-    def self.varint_encode(value)
+  class Numeric < MessageField
+    def initialize(modifier, identifier, tag, default = 0)
+      super(modifier, identifier, tag, default)
+    end
+  end
+
+  class VarInt < Numeric
+    def self.wire_type; WireType::VARINT end
+    def self.shift(buffer)
+      bytes = []
+      begin
+        # Use #readbyte in Ruby 1.9, and #readchar in Ruby 1.8
+        byte = buffer.send(buffer.respond_to?(:readbyte) ? :readbyte : :readchar)
+        bytes << (byte & 0b01111111)
+      end while byte >> 7 == 1
+      bytes
+    end
+    def self.decode(bytes)
+      value = 0
+      bytes.each_with_index do |byte, index|
+        value |= byte << (7 * index)
+      end
+      value
+    end
+    def decode(bytes)
+      VarInt.decode(bytes)
+    end
+    def self.encode(value)
       return [0].pack('C') if value.zero?
       bytes = []
       until value.zero?
@@ -104,124 +119,79 @@ module Protopuffs
       bytes[-1] &= 0b01111111
       bytes.pack('C*')
     end
+  end
 
-    def self.string_encode(value)
-      value.to_s.unpack('U*').pack('C*')
-    end
+  class Int32 < VarInt; end
+  class Int64 < VarInt; end
+  class UInt32 < VarInt; end
+  class UInt64 < VarInt; end
 
-    def self.float_encode(value)
-      [value].pack('e')
-    end
+  class Fixed32 < Numeric
+    def self.wire_type;     WireType::FIXED32 end
+    def self.shift(buffer); buffer.read(4) end
+    def decode(bytes);      bytes.unpack('V').first end
+    def self.encode(value); [value].pack('V') end
+  end
 
-    def self.double_encode(value)
-      [value].pack('E')
-    end
+  class Fixed64 < Numeric
+    def self.wire_type;     WireType::FIXED64 end
+    def self.shift(buffer); buffer.read(8) end
+    def decode(bytes);      bytes.unpack('Q').first end
+    def self.encode(value); [value].pack('Q') end
+  end
 
-    def self.fixed64_encode(value)
-      [value].pack('Q')
-    end
+  class Double < Fixed64
+    def decode(bytes);      bytes.unpack('E').first end
+    def self.encode(value); [value].pack('E') end
+  end
 
-    def self.fixed32_encode(value)
-      [value].pack('V')
-    end
+  class Float < Fixed32
+    def decode(bytes);      bytes.unpack('e').first end
+    def self.encode(value); [value].pack('e') end
+  end
 
-    # note: returns two values
-    def self.shift_tag_and_value_bytes(buffer)
-      bits = 0
-      bytes = shift_varint(buffer)
-      bytes.each_with_index do |byte, index|
-        byte &= 0b01111111
-        bits |= byte << (7 * index)
-      end
-      wire_type = bits & 0b00000111
-      tag = bits >> 3
-
-      case wire_type
-      when WireType::VARINT
-        value_bytes = shift_varint(buffer)
-      when WireType::LENGTH_DELIMITED
-        value_bytes = shift_length_delimited(buffer)
-      when WireType::FIXED32
-        value_bytes = shift_fixed32(buffer)
-      when WireType::FIXED64
-        value_bytes = shift_fixed64(buffer)
-      end
-
-      [tag, value_bytes]
-    end
-
-    def self.shift_varint(buffer)
-      bytes = []
-      begin
-        # Use #readbyte in Ruby 1.9, and #readchar in Ruby 1.8
-        byte = buffer.send(buffer.respond_to?(:readbyte) ? :readbyte : :readchar)
-        bytes << (byte & 0b01111111)
-      end while byte >> 7 == 1
-      bytes
-    end
-
-    def self.shift_length_delimited(buffer)
-      bytes = shift_varint(buffer)
-      value_length = self.varint_decode(bytes)
+  class LengthDelimited < MessageField
+    def self.wire_type; WireType::LENGTH_DELIMITED end
+    def self.shift(buffer)
+      bytes = VarInt.shift(buffer)
+      value_length = VarInt.decode(bytes)
       buffer.read(value_length)
     end
+    def decode(bytes); bytes end
+  end
 
-    def self.shift_fixed32(buffer)
-      buffer.read(4)
+  class String < LengthDelimited
+    def initialize(modifier, identifier, tag, default = "")
+      super(modifier, identifier, tag, default)
     end
-
-    def self.shift_fixed64(buffer)
-      buffer.read(8)
+    def self.encode(value)
+      VarInt.encode(value.size) + value.to_s.unpack('U*').pack('C*')
     end
+  end
 
-    def decode(value_bytes)
-      case wire_type
-      when WireType::VARINT
-        value = self.class.varint_decode(value_bytes)
-        if @type == "bool"
-          value = true  if value == 1
-          value = false if value == 0
-        end
-      when WireType::LENGTH_DELIMITED
-        if embedded_message?
-          value = Message.const_get(@type.delete("_")).new
-          value.from_wire_format(StringIO.new(value_bytes))
-        else
-          value = value_bytes
-        end
-      when WireType::FIXED32
-        value = self.class.float_decode(value_bytes) if @type == "float"
-        value = self.class.fixed32_decode(value_bytes) if @type == "fixed32"
-      when WireType::FIXED64
-        value = self.class.double_decode(value_bytes) if @type == "double"
-        value = self.class.fixed64_decode(value_bytes) if @type == "fixed64"
-      end
-      value
+  class Bytes < LengthDelimited
+    def initialize(modifier, identifier, tag, default = nil)
+      super(modifier, identifier, tag, default)
     end
-
-    def self.varint_decode(bytes)
-      value = 0
-      bytes.each_with_index do |byte, index|
-        value |= byte << (7 * index)
-      end
-      value
+    def self.encode(value)
+      VarInt.encode(value.size) + value
     end
+  end
 
-    def self.float_decode(bytes)
-      bytes.unpack('e').first
+  class Embedded < LengthDelimited
+    def initialize(type, modifier, identifier, tag, default = nil)
+      @type = type
+      super(modifier, identifier, tag, default)
     end
-
-    def self.double_decode(bytes)
-      bytes.unpack('E').first
+    def decode(bytes)
+      value = Message.const_get(@type.delete("_")).new
+      value.from_wire_format(StringIO.new(bytes))
     end
-
-    def self.fixed64_decode(bytes)
-      bytes.unpack('Q').first
-    end
-
-    def self.fixed32_decode(bytes)
-      bytes.unpack('V').first
+    def self.encode(value)
+      embedded_bytes = value.to_wire_format
+      VarInt.encode(embedded_bytes.size) + embedded_bytes
     end
   end
 
 end
+
