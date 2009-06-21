@@ -1,3 +1,59 @@
 = Protopuffs!
 
-A new implementation of Protocol Buffers in Ruby.
+A new implementation of Protocol Buffers in Ruby. 
+
+If you're not familiar with Protocol Buffers, start with Google's homepage:
+http://code.google.com/apis/protocolbuffers
+
+  Protocol buffers are Google's language-neutral, platform-neutral, extensible
+  mechanism for serializing structured data -- think XML, but smaller, faster,
+  and simpler.
+
+== Installation
+
+Rubyforge is cuckoo for protopuffs.
+
+  sudo gem install protopuffs
+
+== Usage
+
+Start with a +proto+ file, say, <tt>proto/animals.proto</tt>:
+
+  message Bird {
+    required string name = 1;
+    optional string species = 2;
+  }
+
+First, require Protopuffs and tell it where your +proto+ files are:
+
+  require 'protopuffs'
+  Protopuffs.proto_load_path << "proto"
+  Protopuffs.load_message_classes
+
+That makes the Bird message dynamically available in Ruby. Everything's
+namespaced under <tt>Protopuffs::Message</tt>, which should help with your OCD.
+
+  bird = Protopuffs::Message::Bird.new
+  bird.name = "Sonny"
+  bird.species = "Cuculus canorus"
+
+  # encode this message to the super-efficient binary wire format
+  binary_bird = bird.to_wire_format
+
+  # or encode to the human-friendly text format, for debugging
+  puts bird.inspect
+
+On the +dec+ side of +codec+, you can also make sense of incoming binary messages:
+
+  decoded_bird = Protopuffs::Message::Bird.new
+  decoded_bird.from_wire_format(binary_bird)
+  decoded_bird.name  # => "Sonny"
+
+=== Mass-assignment
+
+TODO: explain Message::Base.new with strings containing the wire format or
+hashes, as well as #attributes=
+
+== Missing functionality
+
+TODO: make a todo list :)
