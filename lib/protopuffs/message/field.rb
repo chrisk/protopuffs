@@ -165,7 +165,8 @@ module Protopuffs
       super(modifier, identifier, tag, default)
     end
     def self.encode(value)
-      VarInt.encode(value.size) + value.to_s.unpack('U*').pack('C*')
+      value = value.to_s
+      VarInt.encode(value.size) + value.unpack('U*').pack('C*')
     end
   end
 
