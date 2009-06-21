@@ -39,18 +39,29 @@ class MessageFieldTest < Test::Unit::TestCase
       assert_equal "", field.default
     end
 
-    should "set a numeric's default to 0 when a default isn't specified" do
+    should "set a string's default to '' when a default is specified as nil" do
+      field = Protopuffs::String.new("optional", "name", 1, nil)
+      assert_equal "", field.default
+    end
+
+    should "set a numeric's default to 0 when a default isn't specified or is specified as nil" do
       numeric_types = [Protopuffs::Double, Protopuffs::Float,
                        Protopuffs::Int32, Protopuffs::Int64,
                        Protopuffs::UInt32, Protopuffs::UInt64,
                        Protopuffs::Fixed32, Protopuffs::Fixed64]
       numeric_types.each do |type|
         assert_equal 0, type.new("optional", "number", 1).default
+        assert_equal 0, type.new("optional", "number", 1, nil).default
       end
     end
 
     should "set a bool's default to false when a default isn't specified" do
       field = Protopuffs::Bool.new("optional", "opt_in", 1)
+      assert_same false, field.default
+    end
+
+    should "set a bool's default to false when a default is specified as nil" do
+      field = Protopuffs::Bool.new("optional", "opt_in", 1, nil)
       assert_same false, field.default
     end
 

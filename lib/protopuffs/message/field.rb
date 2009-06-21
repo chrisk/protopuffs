@@ -64,8 +64,8 @@ module Protopuffs
   end
 
   class Bool < MessageField
-    def initialize(modifier, identifier, tag, default = false)
-      super(modifier, identifier, tag, default)
+    def initialize(modifier, identifier, tag, default = nil)
+      super(modifier, identifier, tag, default || false)
     end
     def self.wire_type;     WireType::VARINT end
     def self.shift(buffer); VarInt.shift(buffer) end
@@ -79,8 +79,8 @@ module Protopuffs
   end
 
   class Numeric < MessageField
-    def initialize(modifier, identifier, tag, default = 0)
-      super(modifier, identifier, tag, default)
+    def initialize(modifier, identifier, tag, default = nil)
+      super(modifier, identifier, tag, default || 0)
     end
   end
 
@@ -162,8 +162,8 @@ module Protopuffs
   end
 
   class String < LengthDelimited
-    def initialize(modifier, identifier, tag, default = "")
-      super(modifier, identifier, tag, default)
+    def initialize(modifier, identifier, tag, default = nil)
+      super(modifier, identifier, tag, default || "")
     end
     def self.encode(value)
       value = value.to_s
@@ -173,7 +173,7 @@ module Protopuffs
 
   class Bytes < LengthDelimited
     def initialize(modifier, identifier, tag, default = nil)
-      super(modifier, identifier, tag, default)
+      super
     end
     def self.encode(value)
       VarInt.encode(value.size) + value
