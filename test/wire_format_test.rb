@@ -100,6 +100,10 @@ class WireFormatTest < Test::Unit::TestCase
                                           :b => "testing"
     should_decode_wire_format_to_fields   [0x12, 0x07, 0x74, 0x65, 0x73, 0x74, 0x69, 0x6E, 0x67],
                                           :b => "testing"
+
+    # should encode this as the string "2"
+    should_encode_wire_format_from_fields [0x12, 0x01, 0x32],
+                                          :b => 2
   end
 
 
@@ -237,17 +241,6 @@ class WireFormatTest < Test::Unit::TestCase
                                           :b => 157_372
     should_decode_wire_format_to_fields   [0x10, 0xBC, 0xCD, 0x09],
                                           :a => 0, :b => 157_372
-  end
-
-  context "string fields should convert their values to strings" do
-    setup do
-      fields = [Protopuffs::String.new("required", "a", 1)]
-      Protopuffs::Message::Base.define_message_class("Test1", fields)
-      @message = Protopuffs::Message::Test1.new
-    end
-
-    should_encode_wire_format_from_fields [0x0A, 0x01, 0x32],
-                                          :a => 2
   end
 
 end
