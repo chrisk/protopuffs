@@ -127,28 +127,34 @@ module Protopuffs
   class UInt32 < VarInt; end
   class UInt64 < VarInt; end
 
-  class Fixed32 < Numeric
+  class Fixed32Base < Numeric
     def self.wire_type;     WireType::FIXED32 end
     def self.shift(buffer); buffer.read(4) end
+  end
+
+  class Fixed32 < Fixed32Base
     def decode(bytes);      bytes.unpack('V').first end
     def self.encode(value); [value].pack('V') end
   end
 
-  class Fixed64 < Numeric
+  class Float < Fixed32Base
+    def decode(bytes);      bytes.unpack('e').first end
+    def self.encode(value); [value].pack('e') end
+  end
+
+  class Fixed64Base < Numeric
     def self.wire_type;     WireType::FIXED64 end
     def self.shift(buffer); buffer.read(8) end
+  end
+
+  class Fixed64 < Fixed64Base
     def decode(bytes);      bytes.unpack('Q').first end
     def self.encode(value); [value].pack('Q') end
   end
 
-  class Double < Fixed64
+  class Double < Fixed64Base
     def decode(bytes);      bytes.unpack('E').first end
     def self.encode(value); [value].pack('E') end
-  end
-
-  class Float < Fixed32
-    def decode(bytes);      bytes.unpack('e').first end
-    def self.encode(value); [value].pack('e') end
   end
 
   class LengthDelimited < MessageField
