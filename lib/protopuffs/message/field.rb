@@ -17,6 +17,7 @@ module Protopuffs
       when "float"    then Float.new(*args)
       when "fixed32"  then Fixed32.new(*args)
       else Embedded.new(type, *args)
+      end
     end
 
     def initialize(modifier, identifier, tag, default)
