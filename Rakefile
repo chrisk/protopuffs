@@ -2,6 +2,7 @@ require 'rake'
 require 'rake/testtask'
 require 'rake/rdoctask'
 require 'rcov/rcovtask'
+begin require 'metric_fu'; rescue LoadError; end
 
 begin
   require 'jeweler'
