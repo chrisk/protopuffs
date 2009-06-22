@@ -43,7 +43,7 @@ namespaced under <tt>Protopuffs::Message</tt>, which should help with your OCD.
   # or encode to the human-friendly text format, for debugging
   puts bird.inspect
 
-On the +dec+ side of +codec+, you can also make sense of incoming binary messages:
+You can also decode incoming binary wire-format messages:
 
   decoded_bird = Protopuffs::Message::Bird.new
   decoded_bird.from_wire_format(binary_bird)
@@ -51,9 +51,24 @@ On the +dec+ side of +codec+, you can also make sense of incoming binary message
 
 === Mass-assignment
 
-TODO: explain Message::Base.new with strings containing the wire format or
-hashes, as well as #attributes=
+TODO: explain <tt>Message::Base.new</tt> with strings containing the wire format
+or hashes, as well as <tt>#attributes=</tt>
 
 == Missing functionality
 
-TODO: make a todo list :)
+Protopuffs currently only supports a base set of the <tt>.proto</tt> file
+syntax. Here's what's missing:
+
+  * sint32 and sint64 types (due to lack of support for ZigZag encoding)
+  * packed repeated fields (the <tt>[packed=true]</tt> option)
+  * encoder does not order fields by tag number, as recommended by Google
+  * enumerations
+  * importing definitions
+  * nested message types
+  * extensions
+  * nested extensions
+  * packages
+  * services
+  * built-in options
+  * custom options
+  * groups (deprecated)
