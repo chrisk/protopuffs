@@ -52,7 +52,7 @@ module Protopuffs
       end
 
       def to_wire_format
-        self.class.fields.each do |field|
+        self.class.fields.sort_by { |f| f.tag }.each do |field|
           value = send(field.identifier)
           @buffer.write field.to_wire_format_with_value(value) unless value.nil?
         end

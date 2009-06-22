@@ -243,4 +243,25 @@ class WireFormatTest < Test::Unit::TestCase
                                           :a => 0, :b => 157_372
   end
 
+
+  context "a message with two int32 fields tagged #1 and #2, defined with #2 first" do
+    setup do
+      fields = [Protopuffs::Int32.new("required", "b", 2),
+                Protopuffs::Int32.new("required", "a", 1)]
+      Protopuffs::Message::Base.define_message_class("Test1", fields)
+      @message = Protopuffs::Message::Test1.new
+    end
+
+    # should always encode with fields ordered by tag number, to take
+    # advantage of decoders that optimize for this case
+    should_encode_wire_format_from_fields [0x08, 0x14, 0x10, 0xBC, 0xCD, 0x09],
+                                          :a => 20, :b => 157_372
+
+    # the decoder should still support any field order, though
+    should_decode_wire_format_to_fields   [0x08, 0x14, 0x10, 0xBC, 0xCD, 0x09],
+                                          :a => 20, :b => 157_372
+    should_decode_wire_format_to_fields   [0x10, 0xBC, 0xCD, 0x09, 0x08, 0x14],
+                                          :a => 20, :b => 157_372
+  end
+
 end

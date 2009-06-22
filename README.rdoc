@@ -61,7 +61,6 @@ syntax. Here's what's missing:
 
 * sint32 and sint64 types (due to lack of support for ZigZag encoding)
 * packed repeated fields (the <tt>[packed=true]</tt> option)
-* encoder does not order fields by tag number, as recommended by Google
 * enumerations
 * importing definitions
 * nested message types
