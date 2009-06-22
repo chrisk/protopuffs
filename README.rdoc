@@ -59,16 +59,16 @@ or hashes, as well as <tt>#attributes=</tt>
 Protopuffs currently only supports a base set of the <tt>.proto</tt> file
 syntax. Here's what's missing:
 
-  * sint32 and sint64 types (due to lack of support for ZigZag encoding)
-  * packed repeated fields (the <tt>[packed=true]</tt> option)
-  * encoder does not order fields by tag number, as recommended by Google
-  * enumerations
-  * importing definitions
-  * nested message types
-  * extensions
-  * nested extensions
-  * packages
-  * services
-  * built-in options
-  * custom options
-  * groups (deprecated)
+* sint32 and sint64 types (due to lack of support for ZigZag encoding)
+* packed repeated fields (the <tt>[packed=true]</tt> option)
+* encoder does not order fields by tag number, as recommended by Google
+* enumerations
+* importing definitions
+* nested message types
+* extensions
+* nested extensions
+* packages
+* services
+* built-in options
+* custom options
+* groups (deprecated)
