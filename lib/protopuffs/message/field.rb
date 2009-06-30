@@ -173,7 +173,7 @@ module Protopuffs
     end
     def self.encode(value)
       value = value.to_s
-      VarInt.encode(value.size) + value.unpack('U*').pack('C*')
+      VarInt.encode(value.size) + value
     end
   end
 
