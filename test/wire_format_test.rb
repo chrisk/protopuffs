@@ -131,7 +131,7 @@ class WireFormatTest < Test::Unit::TestCase
       @message = Protopuffs::Message::Test2.new
     end
 
-    should_encode_wire_format_from_fields [0x12, 0x03, 0xD2, 0x90, 0xDC], :b => "ҐÜ"
+    should_encode_wire_format_from_fields [0x12, 0x04, 0xD2, 0x90, 0xC3, 0x9C], :b => "ҐÜ"
   end
 
   context "a message with a bytes field tagged #1" do
