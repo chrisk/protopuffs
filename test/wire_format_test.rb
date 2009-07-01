@@ -114,14 +114,14 @@ class WireFormatTest < Test::Unit::TestCase
     should_encode_wire_format_from_fields [0x12, 0x01, 0x32], :b => 2
   end
 
-  context "a message with one string field with high-ASCII character in it" do
+  context "a message with one string field with the Unicode Cyrillic character 0x0490 in it" do
     setup do
       fields = [Protopuffs::String.new("required", "b", 2)]
       Protopuffs::Message::Base.define_message_class("Test2", fields)
       @message = Protopuffs::Message::Test2.new
     end
 
-    should_encode_wire_format_from_fields [0x12, 0x02, 0xC3, 0x9C ], :b => "Ü"
+    should_encode_wire_format_from_fields [0x12, 0x02, 0xD2, 0x90], :b => "Ґ"
   end
 
   context "a message with a bytes field tagged #1" do

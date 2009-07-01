@@ -173,7 +173,9 @@ module Protopuffs
     end
     def self.encode(value)
       value = value.to_s
-      VarInt.encode(value.size) + value
+      # Use #bytesize in Ruby 1.9, and #size in Ruby 1.8
+      size = value.respond_to?(:bytesize) ? value.bytesize : value.size
+      VarInt.encode(size) + value
     end
   end
 
