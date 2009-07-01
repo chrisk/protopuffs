@@ -100,12 +100,27 @@ class WireFormatTest < Test::Unit::TestCase
                                           :b => "testing"
     should_decode_wire_format_to_fields   [0x12, 0x07, 0x74, 0x65, 0x73, 0x74, 0x69, 0x6E, 0x67],
                                           :b => "testing"
-
-    # should encode this as the string "2"
-    should_encode_wire_format_from_fields [0x12, 0x01, 0x32],
-                                          :b => 2
   end
 
+  context "a message with one string field given a numeric value" do
+    setup do
+      fields = [Protopuffs::String.new("required", "b", 2)]
+      Protopuffs::Message::Base.define_message_class("Test2", fields)
+      @message = Protopuffs::Message::Test2.new
+    end
+
+    should_encode_wire_format_from_fields [0x12, 0x01, 0x32], :b => 2
+  end
+
+  context "a message with one string field with high-ASCII character in it" do
+    setup do
+      fields = [Protopuffs::String.new("required", "b", 2)]
+      Protopuffs::Message::Base.define_message_class("Test2", fields)
+      @message = Protopuffs::Message::Test2.new
+    end
+
+    should_encode_wire_format_from_fields [0x12, 0x02, 0xC3, 0x9C ], :b => "Ü"
+  end
 
   context "a message with a bytes field tagged #1" do
     setup do
