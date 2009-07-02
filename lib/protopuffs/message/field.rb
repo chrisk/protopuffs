@@ -175,9 +175,13 @@ module Protopuffs
     end
     def self.encode(value)
       value = value.to_s
+      value.force_encoding("UTF-8") if value.respond_to?(:force_encoding)
       # Use #bytesize in Ruby 1.9, and #size in Ruby 1.8
       size = value.respond_to?(:bytesize) ? value.bytesize : value.size
       VarInt.encode(size) + value
+    end
+    def decode(bytes)
+      bytes.respond_to?(:force_encoding) ? bytes.force_encoding("UTF-8") : bytes
     end
   end
 
@@ -188,6 +192,9 @@ module Protopuffs
     def self.encode(value)
       VarInt.encode(value.size) + value
     end
+    def decode(bytes)
+      bytes.respond_to?(:force_encoding) ? bytes.force_encoding("BINARY") : bytes
+    end
   end
 
   class Embedded < LengthDelimited
@@ -196,6 +203,7 @@ module Protopuffs
       super(modifier, identifier, tag, default)
     end
     def decode(bytes)
+      bytes.force_encoding("BINARY") if bytes.respond_to?(:force_encoding)
       value = Message.const_get(@type.delete("_")).new
       value.from_wire_format(StringIO.new(bytes))
     end

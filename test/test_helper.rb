@@ -38,6 +38,7 @@ class Test::Unit::TestCase
   def self.should_decode_wire_format_to_fields(actual_bytes, expected_fields)
     should "decode the byte string #{inspect_bytes(actual_bytes)} to the fields #{expected_fields.inspect}" do
       buffer = StringIO.new(actual_bytes.pack('C*'))
+      buffer.set_encoding("BINARY") if buffer.respond_to?(:set_encoding)
       @message.from_wire_format(buffer)
       actual_fields = @message.class.fields.inject({}) { |hash, field|
         hash[field.identifier.to_sym] = @message.send(field.identifier)

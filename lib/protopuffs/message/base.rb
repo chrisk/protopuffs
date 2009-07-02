@@ -45,8 +45,10 @@ module Protopuffs
 
         if field_values.nil?
           @buffer = StringIO.new
+          @buffer.set_encoding("BINARY") if @buffer.respond_to?(:set_encoding)
         elsif field_values.respond_to?(:each_pair)
           @buffer = StringIO.new
+          @buffer.set_encoding("BINARY") if @buffer.respond_to?(:set_encoding)
           self.attributes = field_values
         else
           from_wire_format(field_values)
@@ -70,10 +72,12 @@ module Protopuffs
 
       def from_wire_format(buffer)
         if !buffer.respond_to?(:read)
+          buffer.force_encoding("BINARY") if buffer.respond_to?(:force_encoding)
           @buffer = StringIO.new(buffer)
         else
           @buffer = buffer
         end
+        @buffer.set_encoding("BINARY") if @buffer.respond_to?(:set_encoding)
 
         until @buffer.eof?
           tag = MessageField.shift_tag(@buffer)
