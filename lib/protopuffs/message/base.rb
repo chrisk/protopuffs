@@ -81,7 +81,7 @@ module Protopuffs
 
         until @buffer.eof?
           tag = MessageField.shift_tag(@buffer)
-          field = self.class.fields.find { |field| field.tag == tag }
+          field = self.class.fields.find { |f| f.tag == tag }
           next if field.nil?
           value_bytes = field.class.shift(@buffer)
 
