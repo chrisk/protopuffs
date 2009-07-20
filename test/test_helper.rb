@@ -58,5 +58,10 @@ class Test::Unit::TestCase
     end
   end
 
+  def self.should_encode_and_decode_wire_format_and_fields(bytes, fields)
+    self.should_encode_wire_format_from_fields(bytes, fields)
+    self.should_decode_wire_format_to_fields(bytes, fields)
+  end
+
 end
 
