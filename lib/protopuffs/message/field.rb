@@ -18,6 +18,7 @@ module Protopuffs
       when "bytes"    then Bytes.new(*args)
       when "float"    then Float.new(*args)
       when "fixed32"  then Fixed32.new(*args)
+      when "sfixed32" then SFixed32.new(*args)
       else Embedded.new(type, *args)
       end
     end
@@ -136,6 +137,14 @@ module Protopuffs
 
   class Fixed32 < Fixed32Base
     def decode(bytes);      bytes.unpack('V').first end
+    def self.encode(value); [value].pack('V') end
+  end
+
+  class SFixed32 < Fixed32Base
+    def decode(bytes)
+      value = bytes.unpack('V').first
+      value >= 2**31 ? value -= 2**32 : value
+    end
     def self.encode(value); [value].pack('V') end
   end
 

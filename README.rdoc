@@ -59,7 +59,7 @@ or hashes, as well as <tt>#attributes=</tt>
 Protopuffs currently only supports a base set of the <tt>.proto</tt> file
 syntax. Here's what's missing:
 
-* sfixed32 and sfixed64 types
+* the sfixed64 type
 * sint32 and sint64 types (due to lack of support for ZigZag encoding)
 * packed repeated fields (the <tt>[packed=true]</tt> option)
 * enumerations

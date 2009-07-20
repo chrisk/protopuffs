@@ -193,6 +193,20 @@ class WireFormatTest < Test::Unit::TestCase
   end
 
 
+  context "a message with one sfixed32 field tagged #1" do
+    setup do
+      fields = [Protopuffs::SFixed32.new("required", "a", 1)]
+      Protopuffs::Message::Base.define_message_class("Test1", fields)
+      @message = Protopuffs::Message::Test1.new
+    end
+
+    should_encode_and_decode_wire_format_and_fields [0x0D, 0x05, 0x00, 0x00, 0x80],
+                                                    :a => -2**31 + 5
+    should_encode_and_decode_wire_format_and_fields [0x0D, 0x05, 0x80, 0x00, 0x00],
+                                                    :a => 2**15 + 5
+  end
+
+
   context "a message with one repeating int32 field tagged #1" do
     setup do
       fields = [Protopuffs::Int32.new("repeated", "a", 1)]

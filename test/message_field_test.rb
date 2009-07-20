@@ -30,6 +30,7 @@ class MessageFieldTest < Test::Unit::TestCase
        [ "bytes",    Protopuffs::Bytes],
        [ "float",    Protopuffs::Float],
        [ "fixed32",  Protopuffs::Fixed32],
+       [ "sfixed32", Protopuffs::SFixed32],
        [ "embedded", Protopuffs::Embedded],
       ].each do |type, klass|
         assert_kind_of klass, Protopuffs::MessageField.factory(type, "optional", "a_string", 1, 2)
@@ -50,7 +51,8 @@ class MessageFieldTest < Test::Unit::TestCase
       numeric_types = [Protopuffs::Double, Protopuffs::Float,
                        Protopuffs::Int32, Protopuffs::Int64,
                        Protopuffs::UInt32, Protopuffs::UInt64,
-                       Protopuffs::Fixed32, Protopuffs::Fixed64]
+                       Protopuffs::Fixed32, Protopuffs::Fixed64,
+                       Protopuffs::SFixed32]
       numeric_types.each do |type|
         assert_equal 0, type.new("optional", "number", 1).default
         assert_equal 0, type.new("optional", "number", 1, nil).default
