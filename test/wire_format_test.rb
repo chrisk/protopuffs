@@ -204,6 +204,7 @@ class WireFormatTest < Test::Unit::TestCase
                                                     :a => -2**31 + 5
     should_encode_and_decode_wire_format_and_fields [0x0D, 0x05, 0x80, 0x00, 0x00],
                                                     :a => 2**15 + 5
+    should_losslessly_encode_and_decode_a_random_sample :a => -2**31...2**31
   end
 
 

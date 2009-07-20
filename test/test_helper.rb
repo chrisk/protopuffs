@@ -63,5 +63,21 @@ class Test::Unit::TestCase
     self.should_decode_wire_format_to_fields(bytes, fields)
   end
 
+  def self.should_losslessly_encode_and_decode_a_random_sample(fields)
+    raise ArgumentError if fields.size > 1
+    name, range = fields.shift
+    should "get the same value back after encoding and decoding a random sample of the values #{range.inspect} for field #{name.inspect}" do
+      size = range.last - range.first
+      size -= 1 if range.exclude_end?
+      values_to_test = [range.first, range.first + size]
+      250.times { values_to_test << range.first + rand(size) }
+      values_to_test.each do |value|
+        @message.send("#{name}=", value)
+        @message.from_wire_format(@message.to_wire_format)
+        assert_equal value, @message.send(name)
+      end
+    end
+  end
+
 end
 
