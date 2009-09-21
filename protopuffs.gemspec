@@ -43,6 +43,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/chrisk/protopuffs}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
+  s.rubyforge_project = %q{protopuffs}
   s.rubygems_version = %q{1.3.5}
   s.summary = %q{Sex, drugs, and protocol buffers}
   s.test_files = [

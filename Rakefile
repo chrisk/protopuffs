@@ -10,6 +10,7 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |s|
     s.name = "protopuffs"
+    s.rubyforge_project = "protopuffs"
     s.summary = %Q{Sex, drugs, and protocol buffers}
     s.email = "chris@kampers.net"
     s.homepage = "http://github.com/chrisk/protopuffs"
