@@ -3,13 +3,13 @@
 require 'rubygems'
 require 'test/unit'
 
-gem "polyglot", "=0.2.6"
-gem "treetop", "=1.3.0"
+gem "polyglot", "=0.2.9"
+gem "treetop", "=1.4.2"
 
 gem "thoughtbot-shoulda", "=2.10.2"
 require 'shoulda'
 
-gem "mocha", "=0.9.7"
+gem "mocha", "=0.9.8"
 require 'mocha'
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
